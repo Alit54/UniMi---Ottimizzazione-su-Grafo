@@ -8,7 +8,7 @@ type Node struct {
 }
 
 /*
-TODO: Documentazione
+Implementazione di uno Heap Binario. Uno heap binario è un albero dove il valore di un nodo padre è sempre minore o al più uguale di entrambi i valori dei nodi figli. Inoltre, il massimo numero di nodi figlio è 2.
 */
 type BinaryHeap struct {
 	nodes  []Node
@@ -21,9 +21,8 @@ type BinaryHeap struct {
 // ---------------------- //
 
 /*
-TODO: documentazione
-*/
-func CreateBinaryHeap(values ...int) BinaryHeap {
+ */
+func CreateBinaryHeap(values ...int) *BinaryHeap {
 	n := len(values)
 	heap := BinaryHeap{
 		nodes:  make([]Node, 0, n),
@@ -32,12 +31,12 @@ func CreateBinaryHeap(values ...int) BinaryHeap {
 	}
 	for i := 0; i < n; i++ {
 		heap.nodes = append(heap.nodes, Node{i, values[i]})
-		heap.pos[values[i]] = i
+		heap.pos[i] = i
 	}
 	for k := n/2 - 1; k >= 0; k-- {
 		heap.moveDown(k)
 	}
-	return heap
+	return &heap
 }
 
 /*
@@ -72,9 +71,9 @@ func (heap *BinaryHeap) ExtractMin() Node {
 /*
 TODO: Documentazione
 */
-func (heap *BinaryHeap) DecreaseKey(name int, value int) {
+func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
 	nodePosition := heap.pos[name]
-	heap.nodes[nodePosition].value = value
+	heap.nodes[nodePosition].value = newValue
 	heap.moveUp(nodePosition)
 }
 
@@ -126,7 +125,8 @@ TODO: Documentazione
 */
 func (heap *BinaryHeap) swap(i, j int) {
 	heap.nodes[i], heap.nodes[j] = heap.nodes[j], heap.nodes[i]
-	heap.pos[i], heap.pos[j] = heap.pos[j], heap.pos[i]
+	heap.pos[heap.nodes[i].name] = i
+	heap.pos[heap.nodes[j].name] = j
 }
 
 /*
