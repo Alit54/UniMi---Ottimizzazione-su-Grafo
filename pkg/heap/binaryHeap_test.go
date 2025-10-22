@@ -74,9 +74,9 @@ func TestInsert(t *testing.T) {
 	}
 
 	// Il nuovo minimo dovrebbe essere 1
-	minimum := heap.ExtractMin()
-	if minimum.value != 1 {
-		t.Errorf("Minimo atteso 1, ottenuto %d", minimum.value)
+	min := heap.ExtractMin()
+	if min.value != 1 {
+		t.Errorf("Minimo atteso 1, ottenuto %d", min.value)
 	}
 }
 
