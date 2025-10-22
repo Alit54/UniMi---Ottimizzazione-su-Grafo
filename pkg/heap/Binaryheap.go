@@ -60,8 +60,13 @@ func (heap *BinaryHeap) Insert(name int, value int) {
 /*
 TODO: Documentazione
 */
-func (heap *BinaryHeap) ExtractMin() {
-	// TODO: implementazione
+func (heap *BinaryHeap) ExtractMin() Node {
+	node := heap.nodes[0]
+	heap.swap(0, heap.length-1)
+	heap.pos = heap.pos[:heap.length-1]
+	heap.length--
+	heap.moveDown(0)
+	return node
 }
 
 /*
