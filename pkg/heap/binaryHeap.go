@@ -13,7 +13,7 @@ TODO: Documentazione
 type BinaryHeap struct {
 	nodes  []Node
 	length int
-	pos    []int
+	pos    map[int]int
 }
 
 // ---------------------- //
@@ -28,11 +28,11 @@ func CreateBinaryHeap(values ...int) BinaryHeap {
 	heap := BinaryHeap{
 		nodes:  make([]Node, 0, n),
 		length: n,
-		pos:    make([]int, 0, n),
+		pos:    make(map[int]int, n),
 	}
 	for i := 0; i < n; i++ {
 		heap.nodes = append(heap.nodes, Node{i, values[i]})
-		heap.pos = append(heap.pos, i)
+		heap.pos[values[i]] = i
 	}
 	for k := n/2 - 1; k >= 0; k-- {
 		heap.moveDown(k)
@@ -53,7 +53,7 @@ TODO: Documentazione
 func (heap *BinaryHeap) Insert(name int, value int) {
 	heap.length++
 	heap.nodes = append(heap.nodes, Node{name, value})
-	heap.pos[name] = heap.length
+	heap.pos[name] = heap.length - 1
 	heap.moveUp(heap.length - 1)
 }
 
@@ -63,7 +63,7 @@ TODO: Documentazione
 func (heap *BinaryHeap) ExtractMin() Node {
 	node := heap.nodes[0]
 	heap.swap(0, heap.length-1)
-	heap.pos = heap.pos[:heap.length-1]
+	delete(heap.pos, node.name)
 	heap.length--
 	heap.moveDown(0)
 	return node
