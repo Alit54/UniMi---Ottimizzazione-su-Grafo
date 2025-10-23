@@ -68,6 +68,7 @@ func (heap *BinaryHeap) ExtractMin() Node {
 	node := heap.nodes[0]
 	heap.swap(0, heap.length-1)
 	delete(heap.pos, node.name)
+	heap.nodes = heap.nodes[:len(heap.nodes)-1]
 	heap.length--
 	heap.moveDown(0)
 	return node
