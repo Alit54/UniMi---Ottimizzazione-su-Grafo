@@ -56,6 +56,22 @@ func (heap *BinomialHeap) Insert(name int, value int) {
 	heap.union(tempHeap)
 }
 
+func (heap *BinomialHeap) PrintHeap() {
+	fmt.Println("=== Binomial Heap ===")
+	if heap.min != nil {
+		fmt.Printf("Min: name=%d, value=%d\n", heap.min.name, heap.min.value)
+	}
+
+	current := heap.head
+	treeIndex := 0
+	for current != nil {
+		fmt.Printf("\nTree %d (degree %d):\n", treeIndex, current.degree)
+		heap.printTree(current, 0)
+		current = current.sibling
+		treeIndex++
+	}
+}
+
 // ---------------------- //
 //     METODI PRIVATI     //
 // ---------------------- //
@@ -152,24 +168,6 @@ func (heap *BinomialHeap) updateMin() {
 			heap.min = current
 		}
 		current = current.sibling
-	}
-}
-
-// -----------------------------------------
-
-func (heap *BinomialHeap) PrintHeap() {
-	fmt.Println("=== Binomial Heap ===")
-	if heap.min != nil {
-		fmt.Printf("Min: name=%d, value=%d\n", heap.min.name, heap.min.value)
-	}
-
-	current := heap.head
-	treeIndex := 0
-	for current != nil {
-		fmt.Printf("\nTree %d (degree %d):\n", treeIndex, current.degree)
-		heap.printTree(current, 0)
-		current = current.sibling
-		treeIndex++
 	}
 }
 
