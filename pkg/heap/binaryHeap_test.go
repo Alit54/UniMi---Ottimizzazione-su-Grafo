@@ -1,4 +1,7 @@
-// pkg/heap/binaryHeap_test.go
+/*
+	Questo file è stato generato dalla IA (Claude Sonnet 4.5) per accelerare il processo del progetto. Lo scopo è verificare la correttezza dello heap binario.
+*/
+
 package heap
 
 import (
@@ -493,6 +496,10 @@ func TestInsertAfterExtractAll(t *testing.T) {
 	// Estrai tutto
 	for heap.Len() > 0 {
 		heap.ExtractMin()
+	}
+
+	if heap.Len() != 0 {
+		t.Errorf("Extract fallita")
 	}
 
 	// Inserisci di nuovo
