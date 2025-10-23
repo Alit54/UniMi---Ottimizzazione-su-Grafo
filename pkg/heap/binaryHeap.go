@@ -78,7 +78,10 @@ Decrementa il valore di un nodo presente nello heap.
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
-	nodePosition := heap.pos[name]
+	nodePosition, exists := heap.pos[name]
+	if !exists {
+		return
+	}
 	heap.nodes[nodePosition].value = newValue
 	heap.moveUp(nodePosition)
 }
