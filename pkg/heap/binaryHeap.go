@@ -3,17 +3,17 @@ package heap
 import "fmt"
 
 type Node struct {
-	name  int
-	value int
+	name  int // Nome del nodo
+	value int // Valore del nodo (per ordinamento nello heap)
 }
 
 /*
 Implementazione di uno Heap Binario. Uno heap binario è un albero dove il valore di un nodo padre è sempre minore o al più uguale di entrambi i valori dei nodi figli. Inoltre, il massimo numero di nodi figlio è 2.
 */
 type BinaryHeap struct {
-	nodes  []Node
-	length int
-	pos    map[int]int
+	nodes  []Node      // nodi dello heap
+	length int         // lunghezza dello heap
+	pos    map[int]int // posizioni dei nodi nello heap. La mappa associa il nome del nodo alla sua posizione nello heap
 }
 
 // ---------------------- //
@@ -21,12 +21,13 @@ type BinaryHeap struct {
 // ---------------------- //
 
 /*
-Creazione di uno heap binario sistemando una volta sola lo heap.
+	Creazione di uno heap binario sistemando una volta sola lo heap.
+
 Complessità: O(n)
 */
 func CreateBinaryHeap(values ...int) *BinaryHeap {
 	n := len(values)
-	heap := BinaryHeap{
+	heap := &BinaryHeap{
 		nodes:  make([]Node, 0, n),
 		length: n,
 		pos:    make(map[int]int, n),
@@ -38,11 +39,12 @@ func CreateBinaryHeap(values ...int) *BinaryHeap {
 	for k := n/2 - 1; k >= 0; k-- {
 		heap.moveDown(k)
 	}
-	return &heap
+	return heap
 }
 
 /*
-Restituisce il numero di nodi nello heap.
+	Restituisce il numero di nodi nello heap.
+
 Complessità: O(1)
 */
 func (heap *BinaryHeap) Len() int {
@@ -50,7 +52,8 @@ func (heap *BinaryHeap) Len() int {
 }
 
 /*
-Inserisce un nuovo nodo nello heap.
+	Inserisce un nuovo nodo nello heap.
+
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) Insert(name int, value int) {
@@ -61,7 +64,8 @@ func (heap *BinaryHeap) Insert(name int, value int) {
 }
 
 /*
-Estrae il nodo con valore minore.
+	Estrae il nodo con valore minore.
+
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) ExtractMin() Node {
@@ -75,7 +79,8 @@ func (heap *BinaryHeap) ExtractMin() Node {
 }
 
 /*
-Decrementa il valore di un nodo presente nello heap.
+	Decrementa il valore di un nodo presente nello heap.
+
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
@@ -88,7 +93,8 @@ func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
 }
 
 /*
-Stampa lo heap.
+	Stampa lo heap.
+
 Complessità: O(n)
 */
 func (heap *BinaryHeap) PrintNodes() {
@@ -102,7 +108,8 @@ func (heap *BinaryHeap) PrintNodes() {
 // ---------------------- //
 
 /*
-Restituisce l'indice del figlio di sinistra
+	Restituisce l'indice del figlio di sinistra
+
 Complessità: O(1)
 */
 func (heap *BinaryHeap) left(pos int) int {
@@ -113,7 +120,8 @@ func (heap *BinaryHeap) left(pos int) int {
 }
 
 /*
-Restituisce l'indice del figlio di destra
+	Restituisce l'indice del figlio di destra
+
 Complessità: O(1)
 */
 func (heap *BinaryHeap) right(pos int) int {
@@ -124,7 +132,8 @@ func (heap *BinaryHeap) right(pos int) int {
 }
 
 /*
-Restituisce l'indice del padre
+	Restituisce l'indice del padre
+
 Complessità: O(1)
 */
 func (heap *BinaryHeap) parent(pos int) int {
@@ -135,7 +144,8 @@ func (heap *BinaryHeap) parent(pos int) int {
 }
 
 /*
-Scambia due nodi, prendendo come input le posizioni nello heap dei due nodi.
+	Scambia due nodi, prendendo come input le posizioni nello heap dei due nodi.
+
 Complessità: O(1)
 */
 func (heap *BinaryHeap) swap(i, j int) {
@@ -145,7 +155,8 @@ func (heap *BinaryHeap) swap(i, j int) {
 }
 
 /*
-Sposta verso l'alto un nodo con valore non corretto per le proprietà dello heap.
+	Sposta verso l'alto un nodo con valore non corretto per le proprietà dello heap.
+
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) moveUp(pos int) {
@@ -162,7 +173,8 @@ func (heap *BinaryHeap) moveUp(pos int) {
 }
 
 /*
-Sposta verso il basso un nodo con valore non corretto per le proprietà dello heap.
+	Sposta verso il basso un nodo con valore non corretto per le proprietà dello heap.
+
 Complessità: O(log n)
 */
 func (heap *BinaryHeap) moveDown(pos int) {
