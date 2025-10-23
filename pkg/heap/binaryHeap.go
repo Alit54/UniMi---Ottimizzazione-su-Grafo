@@ -8,7 +8,9 @@ type Node struct {
 }
 
 /*
-Implementazione di uno Heap Binario. Uno heap binario è un albero dove il valore di un nodo padre è sempre minore o al più uguale di entrambi i valori dei nodi figli. Inoltre, il massimo numero di nodi figlio è 2.
+	Implementazione di uno Heap Binario.
+
+Uno heap binario è un albero dove il valore di un nodo padre è sempre minore o al più uguale di entrambi i valori dei nodi figli. Inoltre, il massimo numero di nodi figlio è 2.
 */
 type BinaryHeap struct {
 	nodes  []Node      // nodi dello heap
