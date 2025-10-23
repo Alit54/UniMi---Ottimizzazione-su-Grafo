@@ -34,8 +34,8 @@ func CreateBinaryHeap(values ...int) *BinaryHeap {
 		length: n,
 		pos:    make(map[int]int, n),
 	}
-	for i := 0; i < n; i++ {
-		heap.nodes = append(heap.nodes, Node{i, values[i]})
+	for i, value := range values {
+		heap.nodes = append(heap.nodes, Node{i, value})
 		heap.pos[i] = i
 	}
 	for k := n/2 - 1; k >= 0; k-- {
