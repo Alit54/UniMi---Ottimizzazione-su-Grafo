@@ -1,3 +1,7 @@
+/*
+	Questo file è stato generato dalla IA (Claude Sonnet 4.5) per accelerare il processo del progetto. Lo scopo è verificare la correttezza dello heap binario.
+*/
+
 package heap
 
 import (
@@ -295,5 +299,278 @@ func TestPositionTracking(t *testing.T) {
 	if len(heap.pos) != initialLen-1 {
 		t.Errorf("Dopo ExtractMin, pos dovrebbe avere lunghezza %d, ha %d",
 			initialLen-1, len(heap.pos))
+	}
+}
+
+// ---------------------- //
+//   EDGE CASES & ERRORI  //
+// ---------------------- //
+
+func TestDecreaseKeyNonExistentNode(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// Prova a fare DecreaseKey su un nodo che non esiste
+	initialLen := heap.Len()
+	heap.DecreaseKey(999, 5) // Nodo 999 non esiste
+
+	// L'heap non dovrebbe cambiare
+	if heap.Len() != initialLen {
+		t.Errorf("DecreaseKey su nodo inesistente ha cambiato la lunghezza")
+	}
+
+	// Verifica che l'heap sia ancora valido
+	min := heap.ExtractMin()
+	if min.value != 10 {
+		t.Errorf("Heap corrotto dopo DecreaseKey su nodo inesistente")
+	}
+}
+
+func TestDecreaseKeyAfterExtract(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// Estrai il nodo 0
+	extracted := heap.ExtractMin()
+	extractedName := extracted.name
+
+	// Prova a fare DecreaseKey sul nodo estratto
+	heap.DecreaseKey(extractedName, 5)
+
+	// Non dovrebbe crashare e l'heap dovrebbe essere ancora valido
+	if heap.Len() != 2 {
+		t.Errorf("Lunghezza heap errata dopo DecreaseKey su nodo estratto")
+	}
+}
+
+func TestExtractMinUntilEmpty(t *testing.T) {
+	heap := CreateBinaryHeap(5, 3, 7, 1)
+
+	// Estrai tutti gli elementi
+	for heap.Len() > 0 {
+		heap.ExtractMin()
+	}
+
+	if heap.Len() != 0 {
+		t.Errorf("Heap dovrebbe essere vuoto, lunghezza: %d", heap.Len())
+	}
+
+	if len(heap.pos) != 0 {
+		t.Errorf("pos dovrebbe essere vuoto, lunghezza: %d", len(heap.pos))
+	}
+}
+
+func TestNegativeValues(t *testing.T) {
+	heap := CreateBinaryHeap(-5, -10, 3, -1, 0)
+
+	expected := []int{-10, -5, -1, 0, 3}
+	for i, exp := range expected {
+		node := heap.ExtractMin()
+		if node.value != exp {
+			t.Errorf("Iterazione %d: atteso %d, ottenuto %d", i, exp, node.value)
+		}
+	}
+}
+
+func TestAllSameValues(t *testing.T) {
+	heap := CreateBinaryHeap(5, 5, 5, 5, 5)
+
+	if heap.Len() != 5 {
+		t.Errorf("Lunghezza attesa 5, ottenuta %d", heap.Len())
+	}
+
+	// Tutti gli elementi dovrebbero essere 5
+	for i := 0; i < 5; i++ {
+		node := heap.ExtractMin()
+		if node.value != 5 {
+			t.Errorf("Atteso valore 5, ottenuto %d", node.value)
+		}
+	}
+}
+
+func TestDecreaseKeyToSameValue(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// DecreaseKey al valore attuale (non dovrebbe fare nulla)
+	heap.DecreaseKey(1, 20)
+
+	node := heap.ExtractMin()
+	if node.value != 10 {
+		t.Errorf("Heap modificato erroneamente da DecreaseKey allo stesso valore")
+	}
+}
+
+func TestDecreaseKeyToLargerValue(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// DecreaseKey a un valore MAGGIORE (tecnicamente sbagliato, ma non dovrebbe crashare)
+	heap.DecreaseKey(0, 50)
+
+	// L'heap potrebbe non essere più valido, ma non dovrebbe crashare
+	if heap.Len() != 3 {
+		t.Errorf("Lunghezza heap cambiata inaspettatamente")
+	}
+}
+
+func TestInsertWithNegativeName(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20)
+
+	// Inserisci con name negativo
+	heap.Insert(-1, 5)
+
+	if heap.Len() != 3 {
+		t.Errorf("Insert con name negativo fallito")
+	}
+
+	// Verifica che sia estratto correttamente
+	min := heap.ExtractMin()
+	if min.value != 5 || min.name != -1 {
+		t.Errorf("Nodo con name negativo non gestito correttamente")
+	}
+}
+
+func TestInsertDuplicateNames(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// Inserisci con un name già esistente (name=1 esiste già)
+	heap.Insert(1, 5)
+
+	// Questo sovrascriverà la posizione in pos[1]
+	// L'heap dovrebbe comunque funzionare, anche se semanticamente è scorretto
+	if heap.Len() != 4 {
+		t.Errorf("Insert con name duplicato ha fallito")
+	}
+}
+
+func TestVeryLargeValues(t *testing.T) {
+	heap := CreateBinaryHeap(1000000, 999999, 1000001, 500000)
+
+	expected := []int{500000, 999999, 1000000, 1000001}
+	for i, exp := range expected {
+		node := heap.ExtractMin()
+		if node.value != exp {
+			t.Errorf("Iterazione %d: atteso %d, ottenuto %d", i, exp, node.value)
+		}
+	}
+}
+
+func TestAlternatingInsertExtract(t *testing.T) {
+	heap := CreateBinaryHeap(50)
+
+	for i := 0; i < 100; i++ {
+		heap.Insert(i+1, i*10)
+
+		if i%3 == 0 && heap.Len() > 1 {
+			heap.ExtractMin()
+		}
+	}
+
+	// Verifica che l'heap sia ancora valido
+	lastValue := -1
+	for heap.Len() > 0 {
+		node := heap.ExtractMin()
+		if node.value < lastValue {
+			t.Errorf("Proprietà heap violata: %d < %d", node.value, lastValue)
+		}
+		lastValue = node.value
+	}
+}
+
+func TestDecreaseKeyMultipleTimes(t *testing.T) {
+	heap := CreateBinaryHeap(100, 200, 300)
+
+	// DecreaseKey più volte sullo stesso nodo
+	heap.DecreaseKey(0, 90)
+	heap.DecreaseKey(0, 80)
+	heap.DecreaseKey(0, 70)
+	heap.DecreaseKey(0, 60)
+
+	min := heap.ExtractMin()
+	if min.value != 60 || min.name != 0 {
+		t.Errorf("DecreaseKey multipli fallito: atteso name=0 value=60, ottenuto name=%d value=%d",
+			min.name, min.value)
+	}
+}
+
+func TestInsertAfterExtractAll(t *testing.T) {
+	heap := CreateBinaryHeap(10, 20, 30)
+
+	// Estrai tutto
+	for heap.Len() > 0 {
+		heap.ExtractMin()
+	}
+
+	if heap.Len() != 0 {
+		t.Errorf("Extract fallita")
+	}
+
+	// Inserisci di nuovo
+	heap.Insert(0, 5)
+	heap.Insert(1, 3)
+	heap.Insert(2, 7)
+
+	if heap.Len() != 3 {
+		t.Errorf("Reinserimento dopo svuotamento fallito")
+	}
+
+	min := heap.ExtractMin()
+	if min.value != 3 {
+		t.Errorf("Heap non valido dopo reinserimento: atteso 3, ottenuto %d", min.value)
+	}
+}
+
+func TestZeroValues(t *testing.T) {
+	heap := CreateBinaryHeap(0, 0, 0, 1, -1)
+
+	expected := []int{-1, 0, 0, 0, 1}
+	for i, exp := range expected {
+		node := heap.ExtractMin()
+		if node.value != exp {
+			t.Errorf("Iterazione %d: atteso %d, ottenuto %d", i, exp, node.value)
+		}
+	}
+}
+
+func TestSingleElementOperations(t *testing.T) {
+	heap := CreateBinaryHeap(42)
+
+	// DecreaseKey su singolo elemento
+	heap.DecreaseKey(0, 10)
+
+	if heap.Len() != 1 {
+		t.Error("Lunghezza cambiata dopo DecreaseKey su singolo elemento")
+	}
+
+	node := heap.ExtractMin()
+	if node.value != 10 {
+		t.Errorf("Atteso 10, ottenuto %d", node.value)
+	}
+
+	if heap.Len() != 0 {
+		t.Error("Heap non vuoto dopo estrazione ultimo elemento")
+	}
+}
+
+func TestStressDecreaseKey(t *testing.T) {
+	n := 100
+	values := make([]int, n)
+	for i := 0; i < n; i++ {
+		values[i] = n - i
+	}
+
+	heap := CreateBinaryHeap(values...)
+
+	// DecreaseKey casuale su molti nodi
+	for i := 0; i < n/2; i++ {
+		heap.DecreaseKey(i, i/2)
+	}
+
+	// Verifica che l'heap sia ancora valido
+	lastValue := -1000000
+	for heap.Len() > 0 {
+		node := heap.ExtractMin()
+		if node.value < lastValue {
+			t.Errorf("Heap property violata dopo stress test DecreaseKey")
+			break
+		}
+		lastValue = node.value
 	}
 }
