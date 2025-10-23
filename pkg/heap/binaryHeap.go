@@ -87,7 +87,7 @@ Complessità: O(log n)
 */
 func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
 	nodePosition, exists := heap.pos[name]
-	if !exists {
+	if !exists || newValue > heap.nodes[nodePosition].value {
 		return
 	}
 	heap.nodes[nodePosition].value = newValue
