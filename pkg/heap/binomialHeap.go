@@ -59,6 +59,7 @@ func (heap *BinomialHeap) Insert(name int, value int) {
 		size: 1,
 		pos:  make(map[int]*BinomialNode),
 	}
+	tempHeap.pos[name] = newNode
 	heap.union(tempHeap)
 }
 
@@ -97,7 +98,7 @@ func (heap *BinomialHeap) ExtractMin() *BinomialNode {
 		}
 	}
 	delete(heap.pos, minNode.name)
-	heap.size--
+	heap.size -= childrenHeap.size + 1
 	heap.union(childrenHeap)
 	return minNode
 }
