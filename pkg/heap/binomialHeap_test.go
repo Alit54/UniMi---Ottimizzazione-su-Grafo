@@ -1,4 +1,6 @@
-// pkg/heap/binomialHeap_test.go
+/*
+Questo file è stato generato dalla IA (Claude Sonnet 4.5) per accelerare il processo del progetto. Lo scopo è verificare la correttezza dello heap binomiale.
+*/
 package heap
 
 import (
