@@ -141,7 +141,8 @@ func (heap *BinomialHeap) PrintHeap() {
 // ---------------------- //
 
 func (heap *BinomialHeap) union(heap2 *BinomialHeap) {
-	if heap == nil || heap2 == nil || heap2.head == nil {
+	if heap2 == nil || heap2.head == nil {
+		heap.updateMin()
 		return
 	}
 	heap.head = heap.merge(heap2.head)
