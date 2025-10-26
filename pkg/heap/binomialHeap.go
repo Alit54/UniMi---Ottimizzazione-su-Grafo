@@ -102,6 +102,23 @@ func (heap *BinomialHeap) ExtractMin() *BinomialNode {
 	return minNode
 }
 
+/*
+	Diminuisce il valore di un nodo e ripristina la proprietà heap.
+
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) DecreaseKey(name int, newValue int) {
+	node, exists := heap.pos[name]
+	if !exists || newValue > node.value {
+		return
+	}
+	node.value = newValue
+	heap.moveUp(node)
+	if node.value < heap.min.value {
+		heap.min = node
+	}
+}
+
 func (heap *BinomialHeap) PrintHeap() {
 	fmt.Println("=== Binomial Heap ===")
 	if heap.min != nil {
@@ -245,5 +262,23 @@ func (heap *BinomialHeap) removeFromRootList(node *BinomialNode) {
 			current = current.sibling
 		}
 		current.sibling = node.sibling
+	}
+}
+
+/*
+	Sposta un nodo verso l'alto per ripristinare le proprietà dello heap
+
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) moveUp(node *BinomialNode) {
+	current := node
+	parent := current.parent
+	for parent != nil && current.value < parent.value {
+		current.name, parent.name = parent.name, current.name
+		current.value, parent.value = parent.value, current.value
+		heap.pos[current.name] = current
+		heap.pos[parent.name] = parent
+		current = parent
+		parent = current.parent
 	}
 }
