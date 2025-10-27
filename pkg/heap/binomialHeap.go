@@ -12,8 +12,10 @@ type BinomialNode struct {
 }
 
 type BinomialHeap struct {
-	head *BinomialNode // testa dell'albero (radice di grado più piccolo)
-	min  *BinomialNode // nodo con valore più piccolo
+	head *BinomialNode         // testa dell'albero (radice di grado più piccolo)
+	min  *BinomialNode         // nodo con valore più piccolo
+	size int                   // Numero nodi dell'albero
+	pos  map[int]*BinomialNode // Mappa da nome nodo a puntatore
 }
 
 // ---------------------- //
@@ -29,6 +31,8 @@ func CreateBinomialHeap(values ...int) *BinomialHeap {
 	heap := &BinomialHeap{
 		head: nil,
 		min:  nil,
+		size: 0,
+		pos:  make(map[int]*BinomialNode),
 	}
 	for i, value := range values {
 		heap.Insert(i, value)
@@ -51,9 +55,85 @@ func (heap *BinomialHeap) Insert(name int, value int) {
 	}
 	tempHeap := &BinomialHeap{
 		head: newNode,
-		min:  nil,
+		min:  newNode,
+		size: 1,
+		pos:  make(map[int]*BinomialNode),
 	}
+	tempHeap.pos[name] = newNode
 	heap.union(tempHeap)
+}
+
+/*
+ExtractMin rimuove e restituisce il nodo con valore minimo.
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) ExtractMin() *BinomialNode {
+	if heap.min == nil {
+		return nil
+	}
+	minNode := heap.min
+	heap.removeFromRootList(minNode)
+	childrenHeap := &BinomialHeap{
+		head: nil,
+		min:  nil,
+		size: 0,
+		pos:  make(map[int]*BinomialNode),
+	}
+	if minNode.child != nil {
+		child := minNode.child
+		var prev *BinomialNode = nil
+		for child != nil {
+			next := child.sibling
+			child.sibling = prev
+			child.parent = nil
+			prev = child
+			child = next
+			childrenHeap.size++
+		}
+		childrenHeap.head = prev
+		current := childrenHeap.head
+		for current != nil {
+			childrenHeap.pos[current.name] = current
+			current = current.sibling
+		}
+	}
+	delete(heap.pos, minNode.name)
+	heap.size -= childrenHeap.size + 1
+	heap.union(childrenHeap)
+	return minNode
+}
+
+/*
+	Diminuisce il valore di un nodo e ripristina la proprietà heap.
+
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) DecreaseKey(name int, newValue int) {
+	node, exists := heap.pos[name]
+	if !exists || newValue > node.value {
+		return
+	}
+	node.value = newValue
+	heap.moveUp(node)
+	if node.value < heap.min.value {
+		heap.min = node
+	}
+}
+
+func (heap *BinomialHeap) PrintHeap() {
+	fmt.Println("=== Binomial Heap ===")
+	if heap.min != nil {
+		fmt.Printf("Min: name=%d, value=%d\n", heap.min.name, heap.min.value)
+	}
+
+	current := heap.head
+	treeIndex := 0
+	for current != nil {
+		fmt.Printf("\nTree %d (degree %d):\n", treeIndex, current.degree)
+		heap.printTree(current, 0)
+		current = current.sibling
+		treeIndex++
+	}
 }
 
 // ---------------------- //
@@ -61,7 +141,8 @@ func (heap *BinomialHeap) Insert(name int, value int) {
 // ---------------------- //
 
 func (heap *BinomialHeap) union(heap2 *BinomialHeap) {
-	if heap == nil || heap2 == nil || heap2.head == nil {
+	if heap2 == nil || heap2.head == nil {
+		heap.updateMin()
 		return
 	}
 	heap.head = heap.merge(heap2.head)
@@ -89,12 +170,10 @@ func (heap *BinomialHeap) union(heap2 *BinomialHeap) {
 		next = current.sibling
 	}
 	heap.updateMin()
-	// heap.size += heap2.size
-	/*
-		for name, node := range heap2.pos {
-			heap.pos[name] = node
-		}
-	*/
+	heap.size += heap2.size
+	for name, node := range heap2.pos {
+		heap.pos[name] = node
+	}
 }
 
 func (heap *BinomialHeap) merge(head2 *BinomialNode) *BinomialNode {
@@ -155,24 +234,6 @@ func (heap *BinomialHeap) updateMin() {
 	}
 }
 
-// -----------------------------------------
-
-func (heap *BinomialHeap) PrintHeap() {
-	fmt.Println("=== Binomial Heap ===")
-	if heap.min != nil {
-		fmt.Printf("Min: name=%d, value=%d\n", heap.min.name, heap.min.value)
-	}
-
-	current := heap.head
-	treeIndex := 0
-	for current != nil {
-		fmt.Printf("\nTree %d (degree %d):\n", treeIndex, current.degree)
-		heap.printTree(current, 0)
-		current = current.sibling
-		treeIndex++
-	}
-}
-
 func (heap *BinomialHeap) printTree(node *BinomialNode, indent int) {
 	if node == nil {
 		return
@@ -187,5 +248,39 @@ func (heap *BinomialHeap) printTree(node *BinomialNode, indent int) {
 	for child != nil {
 		heap.printTree(child, indent+1)
 		child = child.sibling
+	}
+}
+
+/*
+removeFromRootList rimuove un nodo dalla lista di radici.
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) removeFromRootList(node *BinomialNode) {
+	if heap.head == node {
+		heap.head = node.sibling
+	} else {
+		current := heap.head
+		for current.sibling != node {
+			current = current.sibling
+		}
+		current.sibling = node.sibling
+	}
+}
+
+/*
+	Sposta un nodo verso l'alto per ripristinare le proprietà dello heap
+
+Complessità: O(log n)
+*/
+func (heap *BinomialHeap) moveUp(node *BinomialNode) {
+	current := node
+	parent := current.parent
+	for parent != nil && current.value < parent.value {
+		current.name, parent.name = parent.name, current.name
+		current.value, parent.value = parent.value, current.value
+		heap.pos[current.name] = current
+		heap.pos[parent.name] = parent
+		current = parent
+		parent = current.parent
 	}
 }

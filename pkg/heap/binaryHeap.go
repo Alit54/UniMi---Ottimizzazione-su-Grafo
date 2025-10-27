@@ -1,6 +1,9 @@
 package heap
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Node struct {
 	name  int // Nome del nodo
@@ -99,10 +102,8 @@ func (heap *BinaryHeap) DecreaseKey(name int, newValue int) {
 
 Complessità: O(n)
 */
-func (heap *BinaryHeap) PrintNodes() {
-	for _, node := range heap.nodes {
-		fmt.Println(node.value)
-	}
+func (heap *BinaryHeap) PrintHeap() {
+	heap.printNode(heap.nodes[0], 0)
 }
 
 // ---------------------- //
@@ -194,5 +195,23 @@ func (heap *BinaryHeap) moveDown(pos int) {
 			stop = true
 		}
 		pos = minSon
+	}
+}
+
+/*
+	stampa un nodo e tutti i suoi figli ricorsivamente
+
+Complessità: O(n)
+*/
+func (heap *BinaryHeap) printNode(node Node, indent int) {
+	fmt.Print(strings.Repeat(" ", indent))
+	fmt.Printf("Nome: %d Valore: %d\n", node.name, node.value)
+	if heap.left(heap.pos[node.name]) < heap.length {
+		leftSon := heap.nodes[heap.left(heap.pos[node.name])]
+		heap.printNode(leftSon, indent+1)
+	}
+	if heap.right(heap.pos[node.name]) < heap.length {
+		rightSon := heap.nodes[heap.right(heap.pos[node.name])]
+		heap.printNode(rightSon, indent+1)
 	}
 }
