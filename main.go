@@ -6,10 +6,36 @@ import (
 )
 
 func main() {
-	binaryHeap := heap.CreateBinomialHeap(5, 15, 25, 35, 45)
-	binaryHeap.PrintHeap()
+	heap := heap.CreateBinomialHeap()
+
+	heap.PrintHeap()
 	fmt.Println("---")
-	binaryHeap.DecreaseKey(4, 0)
-	binaryHeap.ExtractMin()
-	binaryHeap.PrintHeap()
+
+	// Alterna Insert ed ExtractMin
+	heap.Insert(1, 50.0)
+	heap.Insert(2, 30.0)
+	heap.Insert(3, 70.0)
+
+	heap.PrintHeap()
+	fmt.Println("---")
+
+	heap.ExtractMin() // Estrai 30.0
+
+	heap.PrintHeap()
+	fmt.Println("---")
+
+	heap.Insert(4, 20.0)
+	heap.Insert(5, 40.0)
+
+	heap.PrintHeap()
+	fmt.Println("---")
+
+	heap.ExtractMin() // Estrai 20.0
+
+	heap.PrintHeap()
+	fmt.Println("---")
+
+	heap.DecreaseKey(3, 25.0)
+
+	heap.PrintHeap()
 }
