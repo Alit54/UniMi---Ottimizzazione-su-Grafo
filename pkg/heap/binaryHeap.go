@@ -69,10 +69,10 @@ func (heap *BinaryHeap) IsEmpty() bool {
 
 func (heap *BinaryHeap) PrintHeap() {
 	fmt.Println("=== Heap binario ===")
-	fmt.Println("Numero di elementi: ", heap.size)
+	fmt.Println("Numero di elementi:", heap.size)
 	fmt.Println("Array:")
 	for i, item := range heap.items {
-		fmt.Printf("  [%d] nodeID=%d, dist=%.2f\n", i, item.nodeID, item.distance)
+		fmt.Printf("  [%d] nodeID=%d, valore=%.2f\n", i, item.nodeID, item.distance)
 	}
 	fmt.Println("Albero:")
 	heap.printNode(0, 0)
@@ -120,7 +120,7 @@ func (heap *BinaryHeap) printNode(index int, level int) {
 		return
 	}
 	item := heap.items[index]
-	fmt.Printf("[%d] nodeID=%d, dist=%.2f\n", index, item.nodeID, item.distance)
+	fmt.Printf("[%d] nodeID=%d, valore=%.2f\n", index, item.nodeID, item.distance)
 	leftChild := heap.left(index)
 	rightChild := heap.right(index)
 	if leftChild < heap.size || rightChild < heap.size {

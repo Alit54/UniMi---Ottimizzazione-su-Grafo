@@ -130,13 +130,14 @@ func (heap *BinomialHeap) Size() int {
 
 func (heap *BinomialHeap) PrintHeap() {
 	fmt.Println("=== Binomial Heap ===")
+	fmt.Println("Numero di elementi:", heap.size)
 	if heap.min != nil {
-		fmt.Printf("Min: nodeID=%d, distance=%f\n", heap.min.nodeID, heap.min.distance)
+		fmt.Printf("Min: nodeID=%d, valore=%f\n", heap.min.nodeID, heap.min.distance)
 	}
 	current := heap.head
 	treeIndex := 0
 	for current != nil {
-		fmt.Printf("\nTree %d (degree %d):\n", treeIndex, current.degree)
+		fmt.Printf("\nAlbero %d (grado %d):\n", treeIndex, current.degree)
 		heap.printTree(current, 0)
 		current = current.sibling
 		treeIndex++
@@ -249,7 +250,7 @@ func (heap *BinomialHeap) printTree(node *binomialNode, indent int) {
 	for i := 0; i < indent; i++ {
 		fmt.Print("  ")
 	}
-	fmt.Printf("nodeID=%d, distance=%f, degree=%d\n", node.nodeID, node.distance, node.degree)
+	fmt.Printf("nodeID=%d, valore=%f, grado=%d\n", node.nodeID, node.distance, node.degree)
 
 	child := node.child
 	for child != nil {
