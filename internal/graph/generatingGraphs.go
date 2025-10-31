@@ -79,3 +79,42 @@ func CreateGraphDiscardRepetition(density float64, nNode int, directed bool) []i
 	}
 	return selected
 }
+
+/*
+Algoritmo 4 presentato a lezione: usa una hash function per rilevare archi già selezionati
+*/
+func CreateGraphHashFunction(density float64, nNode int, directed bool, hashDimension int) []int {
+	if density < 0 || density > 0.5 {
+		return nil
+	}
+	var mMax int
+	if directed {
+		mMax = nNode * (nNode - 1)
+	} else {
+		mMax = nNode * (nNode - 1) / 2
+	}
+	numberArcs := int(density * float64(mMax))
+	selected := make([]int, 0, numberArcs)
+	flag := make(map[int]bool, hashDimension)
+	hash := make([]map[int]bool, hashDimension)
+	for i := 0; i < hashDimension; i++ {
+		hash[i] = make(map[int]bool, numberArcs)
+	}
+	k := 0
+	for k < numberArcs {
+		arc := rand.Intn(mMax)
+		hashArc := arc % hashDimension // h[arc] = arc mod hashDimension
+		if !flag[hashArc] || !hash[hashArc][arc] {
+			k++
+			flag[hashArc] = true
+			hash[hashArc][arc] = true
+		}
+	}
+	// NOTA: complessità di questo for annidato è O(p) perché la mappa contiene solo i valori per cui hash[i] = True. Quindi l'append viene eseguita p volte.
+	for i := 0; i < hashDimension; i++ {
+		for arc := range hash[i] {
+			selected = append(selected, arc)
+		}
+	}
+	return selected
+}
