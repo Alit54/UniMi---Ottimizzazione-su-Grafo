@@ -83,6 +83,24 @@ func CreateGraphHashFunction(density float64, nNode int, directed bool, hashDime
 	return selected
 }
 
+/*
+Algoritmo 5 presentato a lezione: modifica il range di generazione di numeri casuali evitando duplicati a priori. Ha complessità O(m) a causa dell'inizializzazione
+*/
+func CreateGraphSelectSuitablyElements(density float64, nNode int, directed bool) []int {
+	numberArcs, mMax := calculateNumberArcs(density, nNode, directed)
+	selected := make([]int, numberArcs)
+	elements := make([]int, mMax)
+	for i := 0; i < mMax; i++ {
+		elements[i] = i
+	}
+	for k := 0; k < numberArcs; k++ {
+		arc := rand.Intn(mMax-k) + k
+		selected[k] = elements[arc]
+		elements[arc] = elements[k]
+	}
+	return selected
+}
+
 func calculateNumberArcs(density float64, nNode int, directed bool) (numberArcs int, mMax int) {
 	if density < 0 || density > 0.5 {
 		return 0, 0
