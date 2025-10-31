@@ -1,6 +1,8 @@
 package graph
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 /*
 Algoritmo 1 presentato a lezione: ha complessità O(p) ma non garantisce univocità degli archi.
@@ -45,6 +47,34 @@ func CreateGraphSelectRandomSubset(density float64, nNode int, directed bool) []
 			arc = 0
 		} else {
 			arc++
+		}
+	}
+	return selected
+}
+
+/*
+Algoritmo 3 presentato a lezione: nel caso medio ha complessità O(m) ma potrebbe entrare in un loop infinito
+*/
+func CreateGraphDiscardRepetition(density float64, nNode int, directed bool) []int {
+	if density < 0 || density > 0.5 {
+		return nil
+	}
+	var mMax int
+	if directed {
+		mMax = nNode * (nNode - 1)
+	} else {
+		mMax = nNode * (nNode - 1) / 2
+	}
+	numberArcs := int(density * float64(mMax))
+	selected := make([]int, numberArcs)
+	flag := make(map[int]bool, mMax)
+	k := 0
+	for k < numberArcs {
+		arc := rand.Intn(mMax)
+		if !flag[arc] {
+			selected[k] = arc
+			k++
+			flag[arc] = true
 		}
 	}
 	return selected
