@@ -22,3 +22,30 @@ func CreateGraphSelectRandom(density float64, nNode int, directed bool) []int {
 	}
 	return selected
 }
+
+/*
+Algoritmo 2 presentato a lezione: ha complessità O(p) ma non genera gli archi in modo indipendente
+*/
+func CreateGraphSelectRandomSubset(density float64, nNode int, directed bool) []int {
+	if density < 0 || density > 1 {
+		return nil
+	}
+	var mMax int
+	if directed {
+		mMax = nNode * (nNode - 1)
+	} else {
+		mMax = nNode * (nNode - 1) / 2
+	}
+	numberArcs := int(density * float64(mMax))
+	selected := make([]int, numberArcs)
+	arc := rand.Intn(mMax)
+	for i := 0; i < numberArcs; i++ {
+		selected[i] = arc
+		if arc == mMax {
+			arc = 0
+		} else {
+			arc++
+		}
+	}
+	return selected
+}
