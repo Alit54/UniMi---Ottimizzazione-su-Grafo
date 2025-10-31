@@ -6,7 +6,7 @@ import "math/rand"
 Algoritmo 1 presentato a lezione: ha complessità O(p) ma non garantisce univocità degli archi.
 */
 func CreateGraphSelectRandom(density float64, nNode int, directed bool) []int {
-	if density < 0 || density > 1 {
+	if density < 0 || density > 0.5 {
 		return nil
 	}
 	var mMax int
@@ -27,7 +27,7 @@ func CreateGraphSelectRandom(density float64, nNode int, directed bool) []int {
 Algoritmo 2 presentato a lezione: ha complessità O(p) ma non genera gli archi in modo indipendente
 */
 func CreateGraphSelectRandomSubset(density float64, nNode int, directed bool) []int {
-	if density < 0 || density > 1 {
+	if density < 0 || density > 0.5 {
 		return nil
 	}
 	var mMax int
