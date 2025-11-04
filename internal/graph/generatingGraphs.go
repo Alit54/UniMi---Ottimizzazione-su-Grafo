@@ -102,7 +102,7 @@ func CreateGraphSelectSuitablyElements(density float64, nNode int, directed bool
 }
 
 func calculateNumberArcs(density float64, nNode int, directed bool) (numberArcs int, mMax int) {
-	if density < 0 || density > 0.5 {
+	if density < 0 || density > 1 {
 		return 0, 0
 	}
 	if directed {
