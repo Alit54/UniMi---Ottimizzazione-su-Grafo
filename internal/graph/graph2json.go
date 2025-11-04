@@ -26,16 +26,16 @@ type EdgeData struct {
 }
 
 // ExportToJSON esporta il grafo in formato JSON per NetworkX
-func (g *Graph) ExportToJSON(filename string) error {
+func (graph *Graph) ExportToJSON(filename string) error {
 	// Costruisci la struttura dati
 	data := GraphData{
-		Nodes:    make([]NodeData, 0, len(g.nodes)),
-		Edges:    make([]EdgeData, 0, len(g.edges)),
-		Directed: g.directed,
+		Nodes:    make([]NodeData, 0, len(graph.nodes)),
+		Edges:    make([]EdgeData, 0, len(graph.edges)),
+		Directed: graph.directed,
 	}
 
 	// Aggiungi nodi
-	for _, node := range g.nodes {
+	for _, node := range graph.nodes {
 		data.Nodes = append(data.Nodes, NodeData{
 			ID:   node.nodeID,
 			Name: node.name,
@@ -43,7 +43,7 @@ func (g *Graph) ExportToJSON(filename string) error {
 	}
 
 	// Aggiungi archi
-	for _, edge := range g.edges {
+	for _, edge := range graph.edges {
 		data.Edges = append(data.Edges, EdgeData{
 			Source: edge.startNode.nodeID,
 			Target: edge.endNode.nodeID,
@@ -64,7 +64,7 @@ func (g *Graph) ExportToJSON(filename string) error {
 }
 
 // ExportToGraphML esporta in formato GraphML (alternativa a JSON)
-func (g *Graph) ExportToGraphML(filename string) error {
+func (graph *Graph) ExportToGraphML(filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -79,14 +79,14 @@ func (g *Graph) ExportToGraphML(filename string) error {
 `)
 
 	// Tipo di grafo
-	if g.directed {
+	if graph.directed {
 		file.WriteString(`  <graph id="G" edgedefault="directed">` + "\n")
 	} else {
 		file.WriteString(`  <graph id="G" edgedefault="undirected">` + "\n")
 	}
 
 	// Nodi
-	for _, node := range g.nodes {
+	for _, node := range graph.nodes {
 		file.WriteString("    <node id=\"n" + string(rune(node.nodeID+'0')) + "\">\n")
 		file.WriteString("      <data key=\"name\">" + node.name + "</data>\n")
 		file.WriteString("    </node>\n")
@@ -94,7 +94,7 @@ func (g *Graph) ExportToGraphML(filename string) error {
 
 	// Archi
 	edgeID := 0
-	for _, edge := range g.edges {
+	for _, edge := range graph.edges {
 		file.WriteString("    <edge id=\"e" + string(rune(edgeID+'0')) +
 			"\" source=\"n" + string(rune(edge.startNode.nodeID+'0')) +
 			"\" target=\"n" + string(rune(edge.endNode.nodeID+'0')) + "\">\n")
@@ -110,7 +110,7 @@ func (g *Graph) ExportToGraphML(filename string) error {
 }
 
 // ExportToAdjacencyList esporta come lista di adiacenza semplice
-func (g *Graph) ExportToAdjacencyList(filename string) error {
+func (graph *Graph) ExportToAdjacencyList(filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (g *Graph) ExportToAdjacencyList(filename string) error {
 		weight int
 	})
 
-	for _, edge := range g.edges {
+	for _, edge := range graph.edges {
 		source := edge.startNode.nodeID
 		target := edge.endNode.nodeID
 		weight := edge.cost
@@ -134,7 +134,7 @@ func (g *Graph) ExportToAdjacencyList(filename string) error {
 		}{target, weight})
 
 		// Se non diretto, aggiungi anche l'inverso
-		if !g.directed {
+		if !graph.directed {
 			adjList[target] = append(adjList[target], struct {
 				target int
 				weight int
@@ -143,7 +143,7 @@ func (g *Graph) ExportToAdjacencyList(filename string) error {
 	}
 
 	// Scrivi formato: "nodeID: neighbor1,weight1 neighbor2,weight2 ..."
-	for nodeID := 0; nodeID < len(g.nodes); nodeID++ {
+	for nodeID := 0; nodeID < len(graph.nodes); nodeID++ {
 		file.WriteString(string(rune(nodeID+'0')) + ":")
 		for _, neighbor := range adjList[nodeID] {
 			file.WriteString(" " + string(rune(neighbor.target+'0')) +
