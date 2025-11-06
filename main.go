@@ -1,29 +1,30 @@
 package main
 
 import (
-	"OttimizzazioneSuGrafo/internal/graph"
+	"OttimizzazioneSuGrafo/internal/flownetwork"
 	"fmt"
-	"strconv"
+	"os"
 )
 
 func main() {
-	g := graph.NewGraph(true)
-	n := 50
-	for i := 0; i < n; i++ {
-		g.AddNode(strconv.Itoa(i))
-	}
-	selected := graph.CreateGraphSelectSuitablyElements(0.1, n, true)
-	for i := 0; i < len(selected); i++ {
-		fmt.Println(selected[i])
-		g.AddEdge(selected[i], 1)
-	}
+	// Genera un FlowNetwork casuale
+	fn := flownetwork.NewFlowNetwork(
+		10, // 10 nodi
+		0,  // 30% di densità
+		6,  // source = 0
+	)
 
-	// ------------
-	err := g.ExportToJSON("export/graph.json")
+	fn.GenerateRandomArcs(0.3, 0, 10)
+
+	// Esporta in JSON
+	jsonStr := fn.ToJSON()
+
+	// Salva su file
+	err := os.WriteFile("export/flownetwork.json", []byte(jsonStr), 0644)
 	if err != nil {
-		fmt.Println("Errore export:", err)
-		return
+		panic(err)
 	}
 
-	fmt.Println("Grafo esportato in graph.json")
+	fmt.Println("FlowNetwork generato e salvato in flownetwork.json")
+	fmt.Printf("Nodi: %d, Archi generati: circa %.0f\n", fn.N, 0.3*float64(fn.N*(fn.N-1)))
 }
