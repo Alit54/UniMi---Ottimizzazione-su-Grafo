@@ -36,3 +36,19 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 		Sink:     sink,
 	}
 }
+
+func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
+	if from < 0 || from >= fn.N {
+		panic("Nodo 'from' non valido")
+	}
+	if to < 0 || to >= fn.N {
+		panic("Nodo 'to' non valido")
+	}
+	if capacity < 0 {
+		panic("Capacità deve essere non negativa")
+	}
+	if from == to {
+		panic("Self-loop non ammessi")
+	}
+	fn.Capacity[from][to] = capacity
+}
