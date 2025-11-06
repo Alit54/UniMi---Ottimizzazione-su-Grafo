@@ -38,12 +38,7 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 }
 
 func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
-	if from < 0 || from >= fn.N {
-		panic("Nodo 'from' non valido")
-	}
-	if to < 0 || to >= fn.N {
-		panic("Nodo 'to' non valido")
-	}
+	fn.validateArcs(from, to)
 	if capacity < 0 {
 		panic("Capacità deve essere non negativa")
 	}
@@ -51,4 +46,27 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 		panic("Self-loop non ammessi")
 	}
 	fn.Capacity[from][to] = capacity
+}
+
+// PushFlow invia δ unità di flusso lungo l'arco (from → to)
+func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
+	fn.validateArcs(from, to)
+	if delta < 0 {
+		panic("Delta deve essere non negativo")
+	}
+	residual := fn.Capacity[from][to] - fn.Flow[from][to]
+	if delta > residual {
+		panic("Delta supera la capacità residua disponibile")
+	}
+	fn.Flow[from][to] += delta
+	fn.Flow[to][from] -= delta
+}
+
+func (fn *FlowNetwork) validateArcs(from int, to int) {
+	if from < 0 || from >= fn.N {
+		panic("Nodo 'from' non valido")
+	}
+	if to < 0 || to >= fn.N {
+		panic("Nodo 'to' non valido")
+	}
 }
