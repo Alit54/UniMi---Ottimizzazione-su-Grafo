@@ -71,6 +71,11 @@ func (fn *FlowNetwork) Reset() {
 	}
 }
 
+// ResidualCapacity restituisce la capacità residua dell'arco
+func (fn *FlowNetwork) ResidualCapacity(from, to int) int {
+	return fn.Capacity[from][to] - fn.Flow[from][to]
+}
+
 func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if from < 0 || from >= fn.N {
 		panic("Nodo 'from' non valido")
