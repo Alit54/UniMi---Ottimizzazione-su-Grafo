@@ -62,6 +62,15 @@ func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 	fn.Flow[to][from] -= delta
 }
 
+// Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
+func (fn *FlowNetwork) Reset() {
+	for i := 0; i < fn.N; i++ {
+		for j := 0; j < fn.N; j++ {
+			fn.Flow[i][j] = 0
+		}
+	}
+}
+
 func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if from < 0 || from >= fn.N {
 		panic("Nodo 'from' non valido")
