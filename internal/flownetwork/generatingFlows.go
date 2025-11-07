@@ -1,6 +1,8 @@
 package flownetwork
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // GenerateRandomArcs genera un FlowNetwork casuale usando l'algoritmo SelectSuitablyElements
 func (fn *FlowNetwork) GenerateRandomArcs(density float64, minCap int, maxCap int) {
@@ -19,6 +21,7 @@ func (fn *FlowNetwork) GenerateRandomArcs(density float64, minCap int, maxCap in
 		capacity := rand.Intn(maxCap-minCap+1) + minCap
 		fn.AddEdge(from, to, capacity)
 	}
+	fn.ensureConnectivity(minCap, maxCap)
 }
 
 // selectSuitablyElements implementa l'algoritmo 5 presentato a lezione per la generazione di archi casuali in un grafo
@@ -44,4 +47,77 @@ func arcIDToNodes(arcID, n int) (from, to int) {
 		to++
 	}
 	return from, to
+}
+
+// isReachable controlla, tramite una BFS, se il nodo sink è raggiungibile da source, per permettere almeno una soluzione ammissibile nel problema di maxflow.
+func (fn *FlowNetwork) isReachable(source, sink int) bool {
+	visited := make(map[int]bool, fn.N)
+	queue := []int{source}
+	visited[source] = true
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		if current == sink {
+			return true
+		}
+		for next := 0; next < fn.N; next++ {
+			residual := fn.Capacity[current][next] - fn.Flow[current][next]
+			if !visited[next] && residual > 0 {
+				visited[next] = true
+				queue = append(queue, next)
+			}
+		}
+	}
+	return false
+}
+
+func (fn *FlowNetwork) getMostFarFromSource(source int) int {
+	visited := make([]bool, fn.N)
+	lastExtracted := source
+	queue := []int{source}
+	visited[source] = true
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		for next := 0; next < fn.N; next++ {
+			residual := fn.Capacity[current][next]
+			if !visited[next] && residual > 0 {
+				visited[next] = true
+				queue = append(queue, next)
+
+			}
+		}
+		lastExtracted = current
+	}
+	return lastExtracted
+}
+
+func (fn *FlowNetwork) getMostFarToSink(sink int) int {
+	visited := make([]bool, fn.N)
+	queue := []int{sink}
+	lastExtracted := sink
+	visited[sink] = true
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+		for previous := 0; previous < fn.N; previous++ {
+			residual := fn.Capacity[previous][current]
+			if !visited[previous] && residual > 0 {
+				visited[previous] = true
+				queue = append(queue, previous)
+			}
+		}
+		lastExtracted = current
+	}
+	return lastExtracted
+}
+
+func (fn *FlowNetwork) ensureConnectivity(minCap int, maxCap int) {
+	if fn.isReachable(fn.Source, fn.Sink) {
+		return
+	}
+	mostFarFromSource := fn.getMostFarFromSource(fn.Source)
+	mostFarToSink := fn.getMostFarToSink(fn.Sink)
+	randomCapacity := rand.Intn(maxCap-minCap+1) + minCap
+	fn.AddEdge(mostFarFromSource, mostFarToSink, randomCapacity)
 }
