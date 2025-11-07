@@ -76,6 +76,15 @@ func (fn *FlowNetwork) ResidualCapacity(from, to int) int {
 	return fn.Capacity[from][to] - fn.Flow[from][to]
 }
 
+// GetMaxFlowValue calcola il valore del flusso finale da source a sink
+func (fn *FlowNetwork) GetMaxFlowValue() int {
+	maxFlow := 0
+	for j := 0; j < fn.N; j++ {
+		maxFlow += fn.Flow[fn.Source][j] - fn.Flow[j][fn.Source]
+	}
+	return maxFlow
+}
+
 func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if from < 0 || from >= fn.N {
 		panic("Nodo 'from' non valido")
