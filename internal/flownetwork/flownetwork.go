@@ -67,7 +67,13 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 }
 
 // PushFlow invia δ unità di flusso lungo l'arco che va da from a
-func (fn *FlowNetwork) PushFlow(from int, edgeIndex int, delta int) {
+func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
+	edgeIndex := -1
+	for i, edge := range fn.Arcs[from] {
+		if edge.To == to {
+			edgeIndex = i
+		}
+	}
 	edge := &fn.Arcs[from][edgeIndex]
 	reverseEdge := &fn.Arcs[edge.To][edge.Reverse]
 
