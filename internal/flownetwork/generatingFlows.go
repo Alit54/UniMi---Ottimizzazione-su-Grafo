@@ -60,11 +60,11 @@ func (fn *FlowNetwork) isReachable(source, sink int) bool {
 		if current == sink {
 			return true
 		}
-		for next := 0; next < fn.N; next++ {
-			residual := fn.Capacity[current][next] - fn.Flow[current][next]
-			if !visited[next] && residual > 0 {
-				visited[next] = true
-				queue = append(queue, next)
+		for _, edge := range fn.Arcs[current] {
+			residual := edge.Capacity - edge.Flow
+			if !visited[edge.To] && residual > 0 {
+				visited[edge.To] = true
+				queue = append(queue, edge.To)
 			}
 		}
 	}
@@ -79,12 +79,11 @@ func (fn *FlowNetwork) getMostFarFromSource(source int) int {
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		for next := 0; next < fn.N; next++ {
-			residual := fn.Capacity[current][next]
-			if !visited[next] && residual > 0 {
-				visited[next] = true
-				queue = append(queue, next)
-
+		for _, edge := range fn.Arcs[current] {
+			residual := edge.Capacity
+			if !visited[edge.To] && residual > 0 {
+				visited[edge.To] = true
+				queue = append(queue, edge.To)
 			}
 		}
 		lastExtracted = current
@@ -101,10 +100,15 @@ func (fn *FlowNetwork) getMostFarToSink(sink int) int {
 		current := queue[0]
 		queue = queue[1:]
 		for previous := 0; previous < fn.N; previous++ {
-			residual := fn.Capacity[previous][current]
-			if !visited[previous] && residual > 0 {
-				visited[previous] = true
-				queue = append(queue, previous)
+			if visited[previous] {
+				continue
+			}
+			for _, edge := range fn.Arcs[previous] {
+				if edge.To == current && edge.Capacity > 0 {
+					visited[previous] = true
+					queue = append(queue, previous)
+					break
+				}
 			}
 		}
 		lastExtracted = current

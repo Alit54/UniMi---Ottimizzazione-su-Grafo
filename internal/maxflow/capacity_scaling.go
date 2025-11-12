@@ -29,9 +29,9 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork) (maxFlow int, iterat
 func (cs *CapacityScaling) findMaxCapacity(fn *flownetwork.FlowNetwork) int {
 	maxCapacity := 0
 	for i := 0; i < fn.N; i++ {
-		for j := 0; j < fn.N; j++ {
-			if fn.Capacity[i][j] > maxCapacity {
-				maxCapacity = fn.Capacity[i][j]
+		for _, edge := range fn.Arcs[i] {
+			if edge.Capacity > maxCapacity {
+				maxCapacity = edge.Capacity
 			}
 		}
 	}
@@ -59,9 +59,16 @@ func (cs *CapacityScaling) findAugmentingPath(fn *flownetwork.FlowNetwork, delta
 	}
 	minCap := math.MaxInt
 	for i := 0; i < len(path)-1; i++ {
-		residual := fn.ResidualCapacity(path[i], path[i+1])
-		if residual < minCap {
-			minCap = residual
+		from := path[i]
+		to := path[i+1]
+		for _, edge := range fn.Arcs[from] {
+			if edge.To == to {
+				residual := edge.Capacity - edge.Flow
+				if residual < minCap {
+					minCap = residual
+				}
+				break
+			}
 		}
 	}
 	return path, minCap
@@ -83,8 +90,9 @@ func bfs(fn *flownetwork.FlowNetwork, delta int) (parent map[int]int, found bool
 			found = true
 			break
 		}
-		for next := 0; next < fn.N; next++ {
-			residual := fn.ResidualCapacity(current, next)
+		for _, edge := range fn.Arcs[current] {
+			residual := edge.Capacity - edge.Flow
+			next := edge.To
 			if !visited[next] && residual >= delta {
 				visited[next] = true
 				parent[next] = current

@@ -12,6 +12,7 @@ func (fn *FlowNetwork) ToJSON() string {
 		Source   int `json:"source"`
 		Target   int `json:"target"`
 		Capacity int `json:"capacity"`
+		Flow     int `json:"flow"`
 	}
 
 	type Graph struct {
@@ -28,15 +29,18 @@ func (fn *FlowNetwork) ToJSON() string {
 		nodes[i] = i
 	}
 
-	// Costruisci lista archi (solo quelli con capacità > 0)
+	// Costruisci lista archi (solo archi originali con capacità > 0)
 	edges := []Edge{}
 	for i := 0; i < fn.N; i++ {
-		for j := 0; j < fn.N; j++ {
-			if fn.Capacity[i][j] > 0 {
+		for _, edge := range fn.Arcs[i] {
+			// Includi solo archi con capacità > 0 (archi originali)
+			// Gli archi backward hanno Capacity = 0 inizialmente
+			if edge.Capacity > 0 {
 				edges = append(edges, Edge{
 					Source:   i,
-					Target:   j,
-					Capacity: fn.Capacity[i][j],
+					Target:   edge.To,
+					Capacity: edge.Capacity,
+					Flow:     edge.Flow,
 				})
 			}
 		}
