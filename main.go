@@ -2,12 +2,18 @@ package main
 
 import (
 	"OttimizzazioneSuGrafo/internal/flownetwork"
+	"OttimizzazioneSuGrafo/internal/maxflow"
 	"fmt"
 	"os"
 )
 
 func main() {
-	generateRandomFlow(10, 0, 5, 0.3, 0, 100, true)
+	fn := generateLectureExample(true)
+	cs := maxflow.CapacityScaling{}
+	maxFlow, iterations := cs.Run(fn, true)
+	fmt.Println("Max flow value: ", maxFlow)
+	fmt.Println("Iterations: ", iterations)
+	fmt.Println(fn.N, fn.Source, fn.Sink)
 }
 
 func generateLectureExample(save bool) *flownetwork.FlowNetwork {
