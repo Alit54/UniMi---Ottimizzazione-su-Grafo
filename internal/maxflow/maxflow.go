@@ -5,7 +5,7 @@ import "OttimizzazioneSuGrafo/internal/flownetwork"
 // MaxFlowAlgorithm è l'interfaccia che ogni classe rappresentante un algoritmo di maxFlow deve implementare
 type MaxFlowAlgorithm interface {
 	// Run è il metodo da invocare per eseguire l'algoritmo.
-	Run(fn *flownetwork.FlowNetwork) (maxFlow int, iterations int)
+	Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int)
 }
 
 // AugmentFlow aumenta il flusso di δ lungo il cammino 'path'
