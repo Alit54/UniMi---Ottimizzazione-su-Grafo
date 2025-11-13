@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	fn := generateLectureExample(false)
+	fn := generateLectureExample(true)
 	cs := maxflow.CapacityScaling{}
-	maxFlow, iterations := cs.Run(fn)
+	maxFlow, iterations := cs.Run(fn, true)
 	fmt.Println("Max flow value: ", maxFlow)
 	fmt.Println("Iterations: ", iterations)
 	fmt.Println(fn.N, fn.Source, fn.Sink)
