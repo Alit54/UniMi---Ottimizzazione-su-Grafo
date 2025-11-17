@@ -8,12 +8,19 @@ import (
 )
 
 func main() {
-	fn := generateLectureExample(true)
+	fn := generateLectureExample(false)
 	cs := maxflow.CapacityScaling{}
-	maxFlow, iterations := cs.Run(fn, true)
+	maxFlow, iterations := cs.Run(fn, false)
 	fmt.Println("Max flow value: ", maxFlow)
 	fmt.Println("Iterations: ", iterations)
 	fmt.Println(fn.N, fn.Source, fn.Sink)
+	fn.Reset()
+	sap := maxflow.ShortestAugmentingPath{}
+	maxFlow, iterations = sap.Run(fn, false)
+	fmt.Println("Max flow value: ", maxFlow)
+	fmt.Println("Iterations: ", iterations)
+	fmt.Println(fn.N, fn.Source, fn.Sink)
+
 }
 
 func generateLectureExample(save bool) *flownetwork.FlowNetwork {
