@@ -20,7 +20,12 @@ func main() {
 	fmt.Println("Max flow value: ", maxFlow)
 	fmt.Println("Iterations: ", iterations)
 	fmt.Println(fn.N, fn.Source, fn.Sink)
-
+	fn.Reset()
+	d := maxflow.Dinic{}
+	maxFlow, iterations = d.Run(fn, false)
+	fmt.Println("Max flow value: ", maxFlow)
+	fmt.Println("Iterations: ", iterations)
+	fmt.Println(fn.N, fn.Source, fn.Sink)
 }
 
 func generateLectureExample(save bool) *flownetwork.FlowNetwork {
