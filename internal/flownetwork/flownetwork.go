@@ -85,6 +85,18 @@ func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 	reverseEdge.Flow -= delta
 }
 
+func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
+	edge := &fn.Arcs[from][index]
+	reverseEdge := &fn.Arcs[edge.To][edge.Reverse]
+
+	residual := edge.Capacity - edge.Flow
+	if delta > residual {
+		panic("Delta supera la capacità residua disponibile")
+	}
+	edge.Flow += delta
+	reverseEdge.Flow -= delta
+}
+
 // Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
 func (fn *FlowNetwork) Reset() {
 	for i := 0; i < fn.N; i++ {
