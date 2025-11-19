@@ -2,7 +2,6 @@ package maxflow
 
 import (
 	"OttimizzazioneSuGrafo/internal/flownetwork"
-	"fmt"
 	"math"
 )
 
@@ -44,10 +43,10 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 		}
 	}
 	maxFlow = fn.GetMaxFlowValue()
-	fmt.Println("Advances: ", advances)
+	/*fmt.Println("Advances: ", advances)
 	fmt.Println("Retreats: ", retreats)
 	fmt.Println("Augments: ", augments)
-	return
+	*/return
 }
 
 func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) []int {
