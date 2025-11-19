@@ -5,27 +5,41 @@ import (
 	"OttimizzazioneSuGrafo/internal/maxflow"
 	"fmt"
 	"os"
+	"time"
 )
 
 func main() {
 	fn := generateLectureExample(false)
-	cs := maxflow.CapacityScaling{}
-	maxFlow, iterations := cs.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
+
+	fmt.Println("Starting SAP")
+	timer := benchmark(fn, &maxflow.ShortestAugmentingPath{}, 1000000)
+	fmt.Println("Average Time: ", timer)
 	fn.Reset()
-	sap := maxflow.ShortestAugmentingPath{}
-	maxFlow, iterations = sap.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
-	fn.Reset()
-	d := maxflow.Dinic{}
-	maxFlow, iterations = d.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
+
+	fmt.Println("Starting altSAP")
+	timer = benchmark(fn, &maxflow.AltShortestAugmentingPath{}, 1000000)
+	fmt.Println("Average Time: ", timer)
+
+	fmt.Println("Starting Dinic")
+	timer = benchmark(fn, &maxflow.Dinic{}, 1000000)
+	fmt.Println("Average Time: ", timer)
+
+	fmt.Println("Starting Capacity Scaling")
+	timer = benchmark(fn, &maxflow.CapacityScaling{}, 1000000)
+	fmt.Println("Average Time: ", timer)
+
+}
+
+func benchmark(fn *flownetwork.FlowNetwork, algorithm interface{ maxflow.MaxFlowAlgorithm }, iterations int) time.Duration {
+	totalTime := time.Duration(0)
+	for i := 0; i < iterations; i++ {
+		start := time.Now()
+		_, _ = algorithm.Run(fn, false)
+		end := time.Now()
+		totalTime += end.Sub(start)
+	}
+	averageTime := totalTime / time.Duration(iterations)
+	return averageTime
 }
 
 func generateLectureExample(save bool) *flownetwork.FlowNetwork {
