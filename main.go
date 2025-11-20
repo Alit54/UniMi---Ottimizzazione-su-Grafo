@@ -11,25 +11,22 @@ import (
 func main() {
 	fn := generateLectureExample(false)
 
-	fmt.Println("Starting SAP")
-	timer := benchmark(fn, &maxflow.ShortestAugmentingPath{}, 1000000)
-	fmt.Println("Average Time: ", timer)
-	fn.Reset()
+	toRun := map[string]maxflow.MaxFlowAlgorithm{}
+	toRun["Capacity Scaling"] = &maxflow.CapacityScaling{}
+	toRun["Shortest Augmenting Path"] = &maxflow.ShortestAugmentingPath{}
+	toRun["OutStars SAP"] = &maxflow.OutStarsShortestAugmentingPath{}
+	toRun["Dinic"] = &maxflow.Dinic{}
 
-	fmt.Println("Starting altSAP")
-	timer = benchmark(fn, &maxflow.AltShortestAugmentingPath{}, 1000000)
-	fmt.Println("Average Time: ", timer)
-	fn.Reset()
+	multipleBenchmark(fn, 1e6, toRun)
 
-	fmt.Println("Starting Dinic")
-	timer = benchmark(fn, &maxflow.Dinic{}, 1000000)
-	fmt.Println("Average Time: ", timer)
-	fn.Reset()
+}
 
-	fmt.Println("Starting Capacity Scaling")
-	timer = benchmark(fn, &maxflow.CapacityScaling{}, 1000000)
-	fmt.Println("Average Time: ", timer)
-	fn.Reset()
+func multipleBenchmark(fn *flownetwork.FlowNetwork, iterations int, toRun map[string]maxflow.MaxFlowAlgorithm) {
+	for i, alg := range toRun {
+		timer := benchmark(fn, alg, iterations)
+		fmt.Println("Average Time:", timer, "of algorithm:", i)
+		fn.Reset()
+	}
 }
 
 func benchmark(fn *flownetwork.FlowNetwork, algorithm interface{ maxflow.MaxFlowAlgorithm }, iterations int) time.Duration {
