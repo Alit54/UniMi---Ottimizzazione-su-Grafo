@@ -24,12 +24,12 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (max
 				break
 			}
 			if saveSteps {
-				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Trovato percorso con capacità %d", minCap))
+				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Trovato percorso con capacita' %d", minCap))
 			}
 			AugmentFlow(fn, path, minCap)
 			iterations++
 			if saveSteps {
-				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Aumento di %d unità", minCap))
+				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Aumento di %d unita'", minCap))
 			}
 		}
 		delta = delta / 2
@@ -126,7 +126,7 @@ func (cs *CapacityScaling) saveStep(
 	scalingDelta int,
 	description string) {
 	snapshot := cs.createSnapshot(fn, path, delta, scalingDelta, description)
-	filename := fmt.Sprintf("step_%04d.json", iteration)
+	filename := fmt.Sprintf("export/maxflow/capacity_scaling/step_%04d.json", iteration)
 	file, _ := os.Create(filename)
 	defer file.Close()
 	file.WriteString(snapshot)
