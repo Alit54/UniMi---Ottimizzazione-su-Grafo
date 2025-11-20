@@ -59,16 +59,12 @@ func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) []
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		for previous := 0; previous < fn.N; previous++ {
-			if distance[previous] < fn.N {
-				continue
-			}
-			for _, edge := range fn.OutStars[previous] {
-				if edge.To == current && edge.Capacity-edge.Flow > 0 {
-					distance[previous] = distance[current] + 1
-					queue = append(queue, previous)
-					break
-				}
+		for _, edge := range fn.InStars[current] {
+			previous := edge.From
+			residual := edge.Capacity - edge.Flow
+			if distance[previous] > distance[current]+1 && residual > 0 {
+				distance[previous] = distance[current] + 1
+				queue = append(queue, current)
 			}
 		}
 	}
