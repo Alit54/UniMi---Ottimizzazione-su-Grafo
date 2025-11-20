@@ -19,15 +19,17 @@ func main() {
 	fmt.Println("Starting altSAP")
 	timer = benchmark(fn, &maxflow.AltShortestAugmentingPath{}, 1000000)
 	fmt.Println("Average Time: ", timer)
+	fn.Reset()
 
 	fmt.Println("Starting Dinic")
 	timer = benchmark(fn, &maxflow.Dinic{}, 1000000)
 	fmt.Println("Average Time: ", timer)
+	fn.Reset()
 
 	fmt.Println("Starting Capacity Scaling")
 	timer = benchmark(fn, &maxflow.CapacityScaling{}, 1000000)
 	fmt.Println("Average Time: ", timer)
-
+	fn.Reset()
 }
 
 func benchmark(fn *flownetwork.FlowNetwork, algorithm interface{ maxflow.MaxFlowAlgorithm }, iterations int) time.Duration {

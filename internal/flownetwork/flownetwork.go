@@ -11,10 +11,11 @@ type FlowEdge struct {
 
 // FlowNetwork rappresenta una rete di flusso.
 type FlowNetwork struct {
-	N      int          // Numero di nodi
-	Arcs   [][]FlowEdge // Lista di adiacenza: Arcs[i] = archi uscenti da i
-	Source int          // Nodo sorgente
-	Sink   int          // Nodo pozzo
+	N        int           // Numero di nodi
+	OutStars [][]*FlowEdge // Lista di adiacenza: OutStars[i] = archi uscenti da i
+	InStars  [][]*FlowEdge // Lista di adiacenza: InStars[i] = archi entranti in i
+	Source   int           // Nodo sorgente
+	Sink     int           // Nodo pozzo
 }
 
 // NewFlowNetwork crea una rete di flusso con n nodi, senza archi
@@ -29,16 +30,19 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 		panic("Source e Sink devono essere nodi diversi")
 	}
 
-	adjacentList := make([][]FlowEdge, n)
+	outStars := make([][]*FlowEdge, n)
+	inStars := make([][]*FlowEdge, n)
 	for i := 0; i < n; i++ {
-		adjacentList[i] = []FlowEdge{}
+		outStars[i] = []*FlowEdge{}
+		inStars[i] = []*FlowEdge{}
 	}
 
 	return &FlowNetwork{
-		N:      n,
-		Source: source,
-		Sink:   sink,
-		Arcs:   adjacentList,
+		N:        n,
+		Source:   source,
+		Sink:     sink,
+		OutStars: outStars,
+		InStars:  inStars,
 	}
 }
 
@@ -50,32 +54,36 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 	if from == to {
 		panic("Self-loop non ammessi")
 	}
-	fn.Arcs[from] = append(fn.Arcs[from], FlowEdge{
+	directArc := FlowEdge{
 		From:     from,
 		To:       to,
 		Capacity: capacity,
 		Flow:     0,
-		Reverse:  len(fn.Arcs[to]),
-	})
-	fn.Arcs[to] = append(fn.Arcs[to], FlowEdge{
+		Reverse:  len(fn.OutStars[to]),
+	}
+	inverseArc := FlowEdge{
 		From:     to,
 		To:       from,
 		Capacity: 0,
 		Flow:     0,
-		Reverse:  len(fn.Arcs[from]) - 1,
-	})
+		Reverse:  len(fn.OutStars[from]) - 1,
+	}
+	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
+	fn.OutStars[to] = append(fn.OutStars[to], &inverseArc)
+	fn.InStars[from] = append(fn.InStars[from], &inverseArc)
+	fn.InStars[to] = append(fn.InStars[to], &directArc)
 }
 
 // PushFlow invia δ unità di flusso lungo l'arco che va da from a
 func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 	edgeIndex := -1
-	for i, edge := range fn.Arcs[from] {
+	for i, edge := range fn.OutStars[from] {
 		if edge.To == to {
 			edgeIndex = i
 		}
 	}
-	edge := &fn.Arcs[from][edgeIndex]
-	reverseEdge := &fn.Arcs[edge.To][edge.Reverse]
+	edge := fn.OutStars[from][edgeIndex]
+	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
 
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
@@ -86,8 +94,8 @@ func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 }
 
 func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
-	edge := &fn.Arcs[from][index]
-	reverseEdge := &fn.Arcs[edge.To][edge.Reverse]
+	edge := fn.OutStars[from][index]
+	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
 
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
@@ -100,8 +108,8 @@ func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
 // Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
 func (fn *FlowNetwork) Reset() {
 	for i := 0; i < fn.N; i++ {
-		for j := range fn.Arcs[i] {
-			fn.Arcs[i][j].Flow = 0
+		for j := range fn.OutStars[i] {
+			fn.OutStars[i][j].Flow = 0
 		}
 	}
 }
@@ -109,7 +117,7 @@ func (fn *FlowNetwork) Reset() {
 // GetMaxFlowValue calcola il valore del flusso finale da source a sink
 func (fn *FlowNetwork) GetMaxFlowValue() int {
 	maxFlow := 0
-	for _, edge := range fn.Arcs[fn.Source] {
+	for _, edge := range fn.OutStars[fn.Source] {
 		maxFlow += edge.Flow
 	}
 	return maxFlow
