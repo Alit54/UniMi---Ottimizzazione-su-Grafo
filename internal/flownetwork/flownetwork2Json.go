@@ -32,7 +32,7 @@ func (fn *FlowNetwork) ToJSON() string {
 	// Costruisci lista archi (solo archi originali con capacità > 0)
 	edges := []Edge{}
 	for i := 0; i < fn.N; i++ {
-		for _, edge := range fn.Arcs[i] {
+		for _, edge := range fn.OutStars[i] {
 			// Includi solo archi con capacità > 0 (archi originali)
 			// Gli archi backward hanno Capacity = 0 inizialmente
 			if edge.Capacity > 0 {

@@ -5,27 +5,40 @@ import (
 	"OttimizzazioneSuGrafo/internal/maxflow"
 	"fmt"
 	"os"
+	"time"
 )
 
 func main() {
 	fn := generateLectureExample(false)
-	cs := maxflow.CapacityScaling{}
-	maxFlow, iterations := cs.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
-	fn.Reset()
-	sap := maxflow.ShortestAugmentingPath{}
-	maxFlow, iterations = sap.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
-	fn.Reset()
-	d := maxflow.Dinic{}
-	maxFlow, iterations = d.Run(fn, false)
-	fmt.Println("Max flow value: ", maxFlow)
-	fmt.Println("Iterations: ", iterations)
-	fmt.Println(fn.N, fn.Source, fn.Sink)
+
+	toRun := map[string]maxflow.MaxFlowAlgorithm{}
+	toRun["Capacity Scaling"] = &maxflow.CapacityScaling{}
+	toRun["Shortest Augmenting Path"] = &maxflow.ShortestAugmentingPath{}
+	toRun["OutStars SAP"] = &maxflow.OutStarsShortestAugmentingPath{}
+	toRun["Dinic"] = &maxflow.Dinic{}
+
+	multipleBenchmark(fn, 1e6, toRun)
+
+}
+
+func multipleBenchmark(fn *flownetwork.FlowNetwork, iterations int, toRun map[string]maxflow.MaxFlowAlgorithm) {
+	for i, alg := range toRun {
+		timer := benchmark(fn, alg, iterations)
+		fmt.Println("Average Time:", timer, "of algorithm:", i)
+		fn.Reset()
+	}
+}
+
+func benchmark(fn *flownetwork.FlowNetwork, algorithm interface{ maxflow.MaxFlowAlgorithm }, iterations int) time.Duration {
+	totalTime := time.Duration(0)
+	for i := 0; i < iterations; i++ {
+		start := time.Now()
+		_, _ = algorithm.Run(fn, false)
+		end := time.Now()
+		totalTime += end.Sub(start)
+	}
+	averageTime := totalTime / time.Duration(iterations)
+	return averageTime
 }
 
 func generateLectureExample(save bool) *flownetwork.FlowNetwork {

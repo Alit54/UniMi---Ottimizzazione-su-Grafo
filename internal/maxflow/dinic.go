@@ -36,7 +36,7 @@ func (d *Dinic) bfs(fn *flownetwork.FlowNetwork) []int {
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		for _, edge := range fn.Arcs[current] {
+		for _, edge := range fn.OutStars[current] {
 			residual := edge.Capacity - edge.Flow
 			next := edge.To
 			if label[next] == -1 && residual > 0 {
@@ -62,7 +62,7 @@ func (d *Dinic) dfs(fn *flownetwork.FlowNetwork, level []int) int {
 		if current == fn.Sink {
 			break
 		}
-		for id, edge := range fn.Arcs[current] {
+		for id, edge := range fn.OutStars[current] {
 			residual := edge.Capacity - edge.Flow
 			next := edge.To
 			if predecessor[next] == -1 && residual > 0 && level[next] == level[current]+1 {
@@ -80,7 +80,7 @@ func (d *Dinic) dfs(fn *flownetwork.FlowNetwork, level []int) int {
 	for current != fn.Source {
 		previous := predecessor[current]
 		id := edgeIndex[current]
-		edge := fn.Arcs[previous][id]
+		edge := fn.OutStars[previous][id]
 		residual := edge.Capacity - edge.Flow
 		if residual < flow {
 			flow = residual

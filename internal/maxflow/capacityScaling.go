@@ -44,7 +44,7 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (max
 func (cs *CapacityScaling) findMaxCapacity(fn *flownetwork.FlowNetwork) int {
 	maxCapacity := 0
 	for i := 0; i < fn.N; i++ {
-		for _, edge := range fn.Arcs[i] {
+		for _, edge := range fn.OutStars[i] {
 			if edge.Capacity > maxCapacity {
 				maxCapacity = edge.Capacity
 			}
@@ -76,7 +76,7 @@ func (cs *CapacityScaling) findAugmentingPath(fn *flownetwork.FlowNetwork, delta
 	for i := 0; i < len(path)-1; i++ {
 		from := path[i]
 		to := path[i+1]
-		for _, edge := range fn.Arcs[from] {
+		for _, edge := range fn.OutStars[from] {
 			if edge.To == to {
 				residual := edge.Capacity - edge.Flow
 				if residual < minCap {
@@ -105,7 +105,7 @@ func bfs(fn *flownetwork.FlowNetwork, delta int) (parent map[int]int, found bool
 			found = true
 			break
 		}
-		for _, edge := range fn.Arcs[current] {
+		for _, edge := range fn.OutStars[current] {
 			residual := edge.Capacity - edge.Flow
 			next := edge.To
 			if !visited[next] && residual >= delta {
@@ -183,7 +183,7 @@ func (cs *CapacityScaling) createSnapshot(
 	// Costruisci lista archi
 	edges := []EdgeInfo{}
 	for i := 0; i < fn.N; i++ {
-		for _, edge := range fn.Arcs[i] {
+		for _, edge := range fn.OutStars[i] {
 			if edge.Capacity > 0 { // Solo archi originali
 				residual := edge.Capacity - edge.Flow
 				key := fmt.Sprintf("%d-%d", i, edge.To)

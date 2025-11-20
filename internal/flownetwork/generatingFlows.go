@@ -60,7 +60,7 @@ func (fn *FlowNetwork) isReachable(source, sink int) bool {
 		if current == sink {
 			return true
 		}
-		for _, edge := range fn.Arcs[current] {
+		for _, edge := range fn.OutStars[current] {
 			residual := edge.Capacity - edge.Flow
 			if !visited[edge.To] && residual > 0 {
 				visited[edge.To] = true
@@ -79,7 +79,7 @@ func (fn *FlowNetwork) getMostFarFromSource(source int) int {
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		for _, edge := range fn.Arcs[current] {
+		for _, edge := range fn.OutStars[current] {
 			residual := edge.Capacity
 			if !visited[edge.To] && residual > 0 {
 				visited[edge.To] = true
@@ -103,7 +103,7 @@ func (fn *FlowNetwork) getMostFarToSink(sink int) int {
 			if visited[previous] {
 				continue
 			}
-			for _, edge := range fn.Arcs[previous] {
+			for _, edge := range fn.OutStars[previous] {
 				if edge.To == current && edge.Capacity > 0 {
 					visited[previous] = true
 					queue = append(queue, previous)
