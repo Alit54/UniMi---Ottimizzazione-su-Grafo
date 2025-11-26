@@ -10,7 +10,6 @@ common_folder = "../../export/maxflow"
 SEARCH_PATHS = [
     ("Capacity Scaling", "capacity_scaling"),
     ("Shortest Augmenting Path", "shortest_augmenting_path"),
-    ("OutStars SAP", "outstars_shortest_augmenting_path"),
     ("Dinic", "dinic"),
 ]
 
@@ -142,7 +141,7 @@ def draw(val):
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=norm_e, edge_color='#94a3b8',
                            width=1.5, style='solid', alpha=0.6, connectionstyle="arc3,rad=0")
 
-    # 3. Valid (Blu - Percorribili con Delta attuale) - NUOVO LAYER
+    # 3. Valid (Blu - Percorribili con Delta attuale)
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=valid_e, edge_color='#2563eb',
                            width=2, style='solid', arrowsize=20, connectionstyle="arc3,rad=0")
 
@@ -150,7 +149,7 @@ def draw(val):
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=path_e, edge_color='#f59e0b',
                            width=3.5, style='solid', arrowsize=25, connectionstyle="arc3,rad=0")
 
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_color=node_colors, node_size=800, edgecolors='#475569')
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_color=node_colors, node_size=1000, edgecolors='#475569')
     nx.draw_networkx_labels(G, pos, ax=ax, labels=labels, font_size=9, font_weight='bold')
     nx.draw_networkx_edge_labels(G, pos, ax=ax, edge_labels=e_labels, font_size=8)
 

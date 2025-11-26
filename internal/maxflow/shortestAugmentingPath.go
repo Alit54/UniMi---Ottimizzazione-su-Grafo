@@ -12,19 +12,24 @@ type ShortestAugmentingPath struct{}
 
 func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
 	advances, retreats, augments := 0, 0, 0
+	current := fn.Source
+	step := 0
+	if saveSteps {
+		initialDist := make([]int, fn.N)
+		sap.saveStep(fn, step, "Start", "Stato iniziale", current, initialDist, nil)
+	}
 	distance := sap.exactDistance(fn)
 	if distance[fn.Source] >= fn.N {
 		return 0, 0
 	}
 	iterations = 0
-	current := fn.Source
 	predecessor := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
 		predecessor[i] = -1
 	}
-	step := 0
 	if saveSteps {
-		sap.saveStep(fn, step, "Start", "Initial State", current, distance, nil)
+		step++
+		sap.saveStep(fn, step, "Start", "Distanze calcolate", current, distance, nil)
 	}
 	for distance[fn.Source] < fn.N {
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance)
@@ -38,7 +43,7 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 			current = next
 			if saveSteps {
 				step++
-				sap.saveStep(fn, step, "Advance", fmt.Sprintf("Avanzamento al nodo %d", current), current, distance, nil)
+				sap.saveStep(fn, step, "Advance", fmt.Sprintf("Advance al nodo %d", current), current, distance, nil)
 			}
 			if current == fn.Sink {
 				delta, path := sap.augment(fn, predecessor)
@@ -51,12 +56,13 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 				current = fn.Source
 			}
 		} else {
+			oldLabel := distance[current]
 			sap.retreat(fn, current, distance)
 			retreats++
 			iterations++
 			if saveSteps {
 				step++
-				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreato al nodo %d", current), current, distance, nil)
+				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreat del nodo %d: (%d -> %d)", current, oldLabel, distance[current]), current, distance, nil)
 			}
 			if current != fn.Source {
 				current = predecessor[current]
