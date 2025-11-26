@@ -13,9 +13,10 @@ type CapacityScaling struct{}
 func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
 	maxCapacity := cs.findMaxCapacity(fn)
 	delta := cs.initializeDelta(maxCapacity)
+	step := 0
 	iterations = 0
 	if saveSteps {
-		cs.saveStep(fn, iterations, nil, 0, delta, "Fase iniziale")
+		cs.saveStep(fn, step, nil, 0, delta, "Fase iniziale")
 	}
 	for delta >= 1 {
 		for {
@@ -24,19 +25,25 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (max
 				break
 			}
 			if saveSteps {
-				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Trovato percorso con capacita' %d", minCap))
+				step++
+				cs.saveStep(fn, step, path, minCap, delta, fmt.Sprintf("Trovato percorso con capacita' %d", minCap))
 			}
 			AugmentFlow(fn, path, minCap)
-			iterations++
 			if saveSteps {
-				cs.saveStep(fn, iterations, path, minCap, delta, fmt.Sprintf("Aumento di %d unita'", minCap))
+				step++
+				cs.saveStep(fn, step, path, minCap, delta, fmt.Sprintf("Aumento di %d unita'", minCap))
 			}
 		}
 		delta = delta / 2
+		if saveSteps {
+			step++
+			cs.saveStep(fn, step, nil, 0, delta, fmt.Sprintf("Nessun percorso con capacita' superiore a %d, passiamo a %d", delta*2, delta))
+		}
 	}
 	maxFlow = fn.GetMaxFlowValue()
 	if saveSteps {
-		cs.saveStep(fn, iterations, nil, 0, 0, fmt.Sprintf("Fase finale - MaxFlow = %d", maxFlow))
+		step++
+		cs.saveStep(fn, step, nil, 0, 0, fmt.Sprintf("Fase finale - MaxFlow = %d", maxFlow))
 	}
 	return maxFlow, iterations
 }
@@ -120,13 +127,13 @@ func bfs(fn *flownetwork.FlowNetwork, delta int) (parent map[int]int, found bool
 
 func (cs *CapacityScaling) saveStep(
 	fn *flownetwork.FlowNetwork,
-	iteration int,
+	step int,
 	path []int,
 	delta int,
 	scalingDelta int,
 	description string) {
 	snapshot := cs.createSnapshot(fn, path, delta, scalingDelta, description)
-	filename := fmt.Sprintf("export/maxflow/capacity_scaling/step_%04d.json", iteration)
+	filename := fmt.Sprintf("export/maxflow/capacity_scaling/step_%04d.json", step)
 	file, _ := os.Create(filename)
 	defer file.Close()
 	file.WriteString(snapshot)

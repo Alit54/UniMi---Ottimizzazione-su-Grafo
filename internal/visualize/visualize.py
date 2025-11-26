@@ -13,6 +13,7 @@ SEARCH_PATHS = [
     ("Capacity Scaling", "capacity_scaling"),
     ("Shortest Augmenting Path", "shortest_augmenting_path"),
     ("OutStars SAP", "outstars_shortest_augmenting_path"),
+    ("Dinic", "dinic"),
     ("Current Directory", ".")
 ]
 

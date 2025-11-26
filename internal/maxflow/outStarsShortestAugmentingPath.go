@@ -22,8 +22,9 @@ func (sap *OutStarsShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, save
 	for i := 0; i < fn.N; i++ {
 		predecessor[i] = -1
 	}
+	step := 0
 	if saveSteps {
-		sap.saveStep(fn, iterations, "Start", "Stato Iniziale", current, distance, nil)
+		sap.saveStep(fn, step, "Start", "Stato Iniziale", current, distance, nil)
 	}
 	for distance[fn.Source] < fn.N {
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance)
@@ -36,19 +37,22 @@ func (sap *OutStarsShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, save
 			predecessor[next] = current
 			current = next
 			if saveSteps {
-				sap.saveStep(fn, iterations, "Advance", fmt.Sprintf("Avanzamento -> Nodo %d", current), current, distance, nil)
+				step++
+				sap.saveStep(fn, step, "Advance", fmt.Sprintf("Avanzamento -> Nodo %d", current), current, distance, nil)
 			}
 			if current == fn.Sink {
 				delta, path := sap.augment(fn, predecessor)
 				augments++
 				iterations++
 				if saveSteps {
-					sap.saveStep(fn, iterations, "Augment", fmt.Sprintf("Augmenting Path (Cap: %d)", delta), current, distance, path)
+					step++
+					sap.saveStep(fn, step, "Augment", fmt.Sprintf("Augmenting Path (Cap: %d)", delta), current, distance, path)
 				}
 				current = fn.Source
 				iterations++
 				if saveSteps {
-					sap.saveStep(fn, iterations, "Restart", "Ritorno a Source dopo Augment", current, distance, nil)
+					step++
+					sap.saveStep(fn, step, "Restart", "Ritorno a Source dopo Augment", current, distance, nil)
 				}
 			}
 		} else {
@@ -57,7 +61,8 @@ func (sap *OutStarsShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, save
 			retreats++
 			iterations++
 			if saveSteps {
-				sap.saveStep(fn, iterations, "Retreat", fmt.Sprintf("Retreat Nodo %d (h: %d -> %d)", current, oldDist, distance[current]), current, distance, nil)
+				step++
+				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreat Nodo %d (h: %d -> %d)", current, oldDist, distance[current]), current, distance, nil)
 			}
 			if current != fn.Source {
 				current = predecessor[current]
@@ -148,7 +153,7 @@ func (sap *OutStarsShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, 
 
 func (sap *OutStarsShortestAugmentingPath) saveStep(
 	fn *flownetwork.FlowNetwork,
-	iteration int,
+	step int,
 	stepType string,
 	description string,
 	currentNode int,
@@ -221,7 +226,7 @@ func (sap *OutStarsShortestAugmentingPath) saveStep(
 	}
 
 	snap := Snapshot{
-		Iteration:   iteration,
+		Iteration:   step,
 		StepType:    stepType,
 		Description: description,
 		Nodes:       nodes,
@@ -232,7 +237,7 @@ func (sap *OutStarsShortestAugmentingPath) saveStep(
 	folder := "export/maxflow/outstars_shortest_augmenting_path"
 	_ = os.MkdirAll(folder, os.ModePerm)
 
-	filename := fmt.Sprintf("%s/step_%04d.json", folder, iteration)
+	filename := fmt.Sprintf("%s/step_%04d.json", folder, step)
 	file, _ := os.Create(filename)
 	defer file.Close()
 
