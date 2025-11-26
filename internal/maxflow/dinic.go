@@ -30,7 +30,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 			d.saveStep(fn, step, "BFS", "Level Graph costruito", level, nil)
 		}
 		for {
-			flow, path := d.dfs(fn, level, saveSteps, &iterations)
+			flow, path := d.dfs(fn, level, saveSteps, &step)
 			if flow == 0 {
 				break
 			}
@@ -38,7 +38,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 			iterations++
 			if saveSteps {
 				step++
-				d.saveStep(fn, iterations, "Flow Pushed", fmt.Sprintf("Flusso aumentato di %d", flow), level, path)
+				d.saveStep(fn, step, "Flow Pushed", fmt.Sprintf("Flusso aumentato di %d", flow), level, path)
 			}
 		}
 	}
@@ -48,7 +48,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 		for i := range finalLevels {
 			finalLevels[i] = -1
 		}
-		d.saveStep(fn, iterations, "End", fmt.Sprintf("Terminato. MaxFlow: %d", maxFlow), finalLevels, nil)
+		d.saveStep(fn, step, "End", fmt.Sprintf("Terminato. MaxFlow: %d", maxFlow), finalLevels, nil)
 	}
 	return maxFlow, iterations
 }
