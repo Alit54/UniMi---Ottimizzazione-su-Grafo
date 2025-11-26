@@ -2,99 +2,127 @@ import json
 import glob
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button, Slider
+from matplotlib.widgets import Slider
 
-# 1. Carica tutti i file JSON generati da Go
+# 1. Caricamento File JSON
+# Cerca nella cartella corrente o in una cartella export comune
 files = sorted(glob.glob("../../export/maxflow/capacity_scaling/step_*.json"))
+
 if not files:
-    print("Nessun file step_*.json trovato. Esegui prima il codice Go!")
+    print("Errore: Nessun file 'step_*.json' trovato.")
     exit()
 
-steps = []
-for f in files:
-    with open(f, 'r') as file:
-        steps.append(json.load(file))
+steps = [json.load(open(f)) for f in files]
 
-# Configurazione Visualizzazione
+# 2. Configurazione Layout Grafico
 fig, ax = plt.subplots(figsize=(12, 8))
-plt.subplots_adjust(bottom=0.2) # Spazio per i controlli
-G = nx.DiGraph()
+plt.subplots_adjust(bottom=0.15) # Spazio per lo slider
 
-# Calcola layout fisso usando il primo step (per evitare che i nodi saltino)
-initial_data = steps[0]
-for i in initial_data['nodes']:
-    G.add_node(i)
-pos = nx.spring_layout(G) # Layout coerente
+# Calcolo Layout Fisso
+# Usiamo i nodi del primo step per calcolare le posizioni
+G_init = nx.DiGraph()
+first_step = steps[0]
+for n in first_step['nodes']:
+    G_init.add_node(n)
 
-current_step_idx = 0
+# Layout a molla con seed fisso per evitare che i nodi "ballino" tra uno step e l'altro
+pos = nx.spring_layout(G_init, seed=42, k=2)
 
-def draw_step(val):
-    global current_step_idx
+def draw(val):
     idx = int(val)
-    current_step_idx = idx
     step = steps[idx]
-
     ax.clear()
 
-    # Ricostruisci grafo per questo step
-    G.clear()
-    edges_list = []
-    edge_colors = []
-    edge_labels = {}
-    node_colors = []
+    G = nx.DiGraph()
 
-    # Definizione Nodi
+    # --- Gestione Nodi ---
+    node_colors = []
+    labels = {}
+
+    # In Capacity Scaling JSON, 'nodes' è una lista di interi [0, 1, 2...]
+    # 'source' e 'sink' sono campi separati nella root del JSON
+    source_id = step['source']
+    sink_id = step['sink']
+
     for n in step['nodes']:
         G.add_node(n)
-        if n == step['source']:
-            node_colors.append('#4ade80') # Source Verde
-        elif n == step['sink']:
-            node_colors.append('#f87171') # Sink Rosso
-        else:
-            node_colors.append('#94a3b8') # Nodi interni
+        labels[n] = str(n)
 
-    # Definizione Archi
-    for edge in step['edges']:
-        u, v = edge['source'], edge['target']
+        if n == source_id:
+            node_colors.append('#4ade80') # Verde (Source)
+        elif n == sink_id:
+            node_colors.append('#f87171') # Rosso (Sink)
+        else:
+            node_colors.append('#e2e8f0') # Grigio (Default)
+
+    # --- Gestione Archi e Stili ---
+    path_edges = []
+    saturated_edges = []
+    normal_edges = []
+    edge_labels = {}
+
+    # Nota: Nel JSON del Capacity Scaling le chiavi sono 'source' e 'target'
+    for e in step['edges']:
+        u, v = e['source'], e['target']
         G.add_edge(u, v)
 
-        # Colore Archi
-        if edge.get('in_path'):
-            edge_colors.append('#f59e0b') # Arancione per percorso corrente
-        elif edge.get('is_saturated'):
-            edge_colors.append('#cbd5e1') # Grigio chiaro per saturi
+        label = f"{e['flow']}/{e['capacity']}"
+        edge_labels[(u,v)] = label
+
+        # Categorizzazione
+        # Capacity Scaling JSON ha già il campo 'is_saturated', ma possiamo anche ricalcolarlo
+        is_sat = e.get('is_saturated') or (e['flow'] == e['capacity'] and e['capacity'] > 0)
+
+        if e['in_path']:
+            path_edges.append((u, v))
+        elif is_sat:
+            saturated_edges.append((u, v))
         else:
-            edge_colors.append('#64748b') # Grigio scuro normale
+            normal_edges.append((u, v))
 
-        # Etichetta Arco: Flusso / Capacità
-        label = f"{edge['flow']}/{edge['capacity']}"
-        edge_labels[(u, v)] = label
+    # --- Disegno Layer (Ordine: Saturi -> Normali -> Path) ---
 
-    # Disegno
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_color=node_colors, node_size=500)
-    nx.draw_networkx_labels(G, pos, ax=ax, font_color='white', font_weight='bold')
+    # 1. Archi Saturi (Sfondo, tratteggiati)
+    nx.draw_networkx_edges(G, pos, ax=ax, edgelist=saturated_edges,
+                           edge_color='#cbd5e1',
+                           width=1,
+                           style='dashed',
+                           arrowsize=10,
+                           connectionstyle="arc3,rad=0")
 
-    nx.draw_networkx_edges(G, pos, ax=ax, edge_color=edge_colors,
-                           width=2, arrowsize=20, connectionstyle="arc3,rad=0.1")
+    # 2. Archi Normali (Intermedi, solidi)
+    nx.draw_networkx_edges(G, pos, ax=ax, edgelist=normal_edges,
+                           edge_color='#64748b',
+                           width=1.5,
+                           style='solid',
+                           arrowsize=15,
+                           connectionstyle="arc3,rad=0")
 
-    nx.draw_networkx_edge_labels(G, pos, ax=ax, edge_labels=edge_labels,
-                                 font_size=8, label_pos=0.7)
+    # 3. Archi Path (Primo piano, evidenziati)
+    nx.draw_networkx_edges(G, pos, ax=ax, edgelist=path_edges,
+                           edge_color='#f59e0b',
+                           width=3,
+                           style='solid',
+                           arrowsize=25,
+                           connectionstyle="arc3,rad=0")
 
-    # Titolo e Info
-    ax.set_title(f"Step {idx}: {step['description']}\n"
-                 f"Delta: {step['scaling_delta']} | Tot Flow: {step['current_flow']}",
-                 fontsize=12, fontweight='bold')
+    # Disegno Nodi e Label
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_color=node_colors, node_size=600, edgecolors='#475569')
+    nx.draw_networkx_labels(G, pos, ax=ax, labels=labels, font_size=10, font_weight='bold')
+    nx.draw_networkx_edge_labels(G, pos, ax=ax, edge_labels=edge_labels, font_size=8)
+
+    # Titolo Informativo
+    delta_info = f"Delta: {step['scaling_delta']}" if step['scaling_delta'] > 0 else "Delta: Fine"
+    title = f"Step {idx}: {step['description']}\n{delta_info} | Flusso Totale: {step['current_flow']}"
+
+    ax.set_title(title, fontsize=12, fontweight='bold', pad=10)
     ax.axis('off')
 
-    # Aggiorna slider se chiamato da bottone
-    if slider.val != idx:
-        slider.set_val(idx)
-
-# Widget Slider
+# Slider Setup
 ax_slider = plt.axes([0.2, 0.05, 0.6, 0.03])
-slider = Slider(ax_slider, 'Step', 0, len(steps)-1, valinit=0, valfmt='%0.0f')
-slider.on_changed(draw_step)
+slider = Slider(ax_slider, 'Timeline', 0, len(steps)-1, valinit=0, valfmt='%0.0f')
+slider.on_changed(draw)
 
 if __name__ == '__main__':
-    draw_step(0)
+    draw(0)
     plt.show()
