@@ -135,11 +135,11 @@ def draw(val):
 
     # 1. Saturated (Sfondo, Tratteggiato)
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=sat_e, edge_color='#cbd5e1',
-                           width=1, style='dashed', connectionstyle="arc3,rad=0")
+                           width=1, style='dashed', arrowsize=20, connectionstyle="arc3,rad=0")
 
     # 2. Normal (Grigio Scuro - Non percorribili per Delta)
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=norm_e, edge_color='#94a3b8',
-                           width=1.5, style='solid', alpha=0.6, connectionstyle="arc3,rad=0")
+                           width=1.5, style='solid', arrowsize=20, alpha=0.6, connectionstyle="arc3,rad=0")
 
     # 3. Valid (Blu - Percorribili con Delta attuale)
     nx.draw_networkx_edges(G, pos, ax=ax, edgelist=valid_e, edge_color='#2563eb',

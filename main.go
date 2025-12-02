@@ -9,16 +9,15 @@ import (
 )
 
 func main() {
-	fn := generateLectureExample(false)
+	fn := generateRandomFlow(1000, 0, 9, 0.5, 1, 100, true)
+	//fn := generateLectureExample(false)
 
 	toRun := map[string]maxflow.MaxFlowAlgorithm{}
 	toRun["Capacity Scaling"] = &maxflow.CapacityScaling{}
 	toRun["Shortest Augmenting Path"] = &maxflow.ShortestAugmentingPath{}
-	toRun["OutStars SAP"] = &maxflow.OutStarsShortestAugmentingPath{}
 	toRun["Dinic"] = &maxflow.Dinic{}
 
-	multipleBenchmark(fn, 1e6, toRun)
-
+	multipleBenchmark(fn, 1, toRun)
 }
 
 func multipleBenchmark(fn *flownetwork.FlowNetwork, iterations int, toRun map[string]maxflow.MaxFlowAlgorithm) {
@@ -33,9 +32,10 @@ func benchmark(fn *flownetwork.FlowNetwork, algorithm interface{ maxflow.MaxFlow
 	totalTime := time.Duration(0)
 	for i := 0; i < iterations; i++ {
 		start := time.Now()
-		_, _ = algorithm.Run(fn, false)
+		flow, steps := algorithm.Run(fn, true)
 		end := time.Now()
 		totalTime += end.Sub(start)
+		fmt.Println(flow, steps)
 	}
 	averageTime := totalTime / time.Duration(iterations)
 	return averageTime
@@ -68,7 +68,7 @@ func generateLectureExample(save bool) *flownetwork.FlowNetwork {
 
 func generateRandomFlow(numberNode int, source int, sink int, density float64, minCap int, maxCap int, save bool) *flownetwork.FlowNetwork {
 	fn := flownetwork.NewFlowNetwork(numberNode, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
+	fn.GenerateRandomArcs(density, minCap, maxCap, sink)
 	if save {
 		jsonStr := fn.ToJSON()
 		err := os.WriteFile("export/flownetwork.json", []byte(jsonStr), 0644)
