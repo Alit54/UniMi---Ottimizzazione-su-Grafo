@@ -88,8 +88,13 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 		if parts[0] == "a" {
 			from, _ := strconv.Atoi(parts[1])
 			to, _ := strconv.Atoi(parts[2])
+			if fn.arcExists(from, to) {
+				continue
+			}
 			capacity, _ := strconv.Atoi(parts[3])
-			fn.AddEdge(from-1, to-1, capacity)
+			if capacity > 0 {
+				fn.AddEdge(from-1, to-1, capacity)
+			}
 		}
 	}
 	return fn
@@ -110,16 +115,7 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 		Flow:     0,
 		Reverse:  len(fn.OutStars[to]),
 	}
-	inverseArc := FlowEdge{
-		From:     to,
-		To:       from,
-		Capacity: 0,
-		Flow:     0,
-		Reverse:  len(fn.OutStars[from]) - 1,
-	}
 	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
-	fn.OutStars[to] = append(fn.OutStars[to], &inverseArc)
-	fn.InStars[from] = append(fn.InStars[from], &inverseArc)
 	fn.InStars[to] = append(fn.InStars[to], &directArc)
 }
 
@@ -132,26 +128,21 @@ func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 		}
 	}
 	edge := fn.OutStars[from][edgeIndex]
-	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
-
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
 		panic("Delta supera la capacità residua disponibile")
 	}
 	edge.Flow += delta
-	reverseEdge.Flow -= delta
 }
 
 func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
 	edge := fn.OutStars[from][index]
-	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
 
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
 		panic("Delta supera la capacità residua disponibile")
 	}
 	edge.Flow += delta
-	reverseEdge.Flow -= delta
 }
 
 // Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
@@ -179,4 +170,13 @@ func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if to < 0 || to >= fn.N {
 		panic("Nodo 'to' non valido")
 	}
+}
+
+func (fn *FlowNetwork) arcExists(from int, to int) bool {
+	for _, arc := range fn.OutStars[from] {
+		if arc.To == to {
+			return true
+		}
+	}
+	return false
 }
