@@ -18,7 +18,7 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 		initialDist := make([]int, fn.N)
 		sap.saveStep(fn, step, "Start", "Stato iniziale", current, initialDist, nil)
 	}
-	distance := sap.exactDistance(fn)
+	distance, number := sap.exactDistance(fn)
 	if distance[fn.Source] >= fn.N {
 		return 0, 0
 	}
@@ -57,7 +57,10 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 			}
 		} else {
 			oldLabel := distance[current]
-			sap.retreat(fn, current, distance)
+			endTest := sap.retreat(fn, current, distance, number)
+			if endTest {
+				break
+			}
 			retreats++
 			iterations++
 			if saveSteps {
@@ -76,12 +79,15 @@ func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bo
 	*/return
 }
 
-func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) []int {
+func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) ([]int, []int) {
 	distance := make([]int, fn.N)
+	number := make([]int, fn.N+2)
 	for i := 0; i < fn.N; i++ {
 		distance[i] = fn.N
+		number[fn.N]++
 	}
 	distance[fn.Sink] = 0
+	number[0]++
 	queue := []int{fn.Sink}
 	for len(queue) > 0 {
 		current := queue[0]
@@ -90,12 +96,14 @@ func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) []
 			previous := edge.From
 			residual := edge.Capacity - edge.Flow
 			if distance[previous] > distance[current]+1 && residual > 0 {
+				number[distance[previous]]--
 				distance[previous] = distance[current] + 1
+				number[distance[previous]]++
 				queue = append(queue, previous)
 			}
 		}
 	}
-	return distance
+	return distance, number
 }
 
 func (sap *ShortestAugmentingPath) findAdmissibleEdge(fn *flownetwork.FlowNetwork, node int, distance []int) int {
@@ -108,7 +116,7 @@ func (sap *ShortestAugmentingPath) findAdmissibleEdge(fn *flownetwork.FlowNetwor
 	return -1
 }
 
-func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int, distance []int) {
+func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int, distance []int, number []int) bool {
 	minDistance := fn.N
 	for _, edge := range fn.OutStars[node] {
 		residual := edge.Capacity - edge.Flow
@@ -118,7 +126,13 @@ func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int
 			}
 		}
 	}
+	number[distance[node]]--
+	if number[distance[node]] == 0 {
+		return true
+	}
 	distance[node] = minDistance + 1
+	number[distance[node]]++
+	return false
 }
 
 func (sap *ShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predecessor []int) (int, []int) {
