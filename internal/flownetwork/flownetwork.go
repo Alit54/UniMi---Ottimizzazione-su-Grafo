@@ -1,5 +1,13 @@
 package flownetwork
 
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
 // FlowEdge rappresenta un arco nel grafo, sia iniziale (Capacity) che dei residui (Flow). Rappresenta un arco (From -> To) e ha l'indice dell'arco inverso (To -> From).
 type FlowEdge struct {
 	From     int // Nodo sorgente
@@ -19,7 +27,8 @@ type FlowNetwork struct {
 }
 
 // NewFlowNetwork crea una rete di flusso con n nodi, senza archi
-func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
+func NewFlowNetwork(n int, nArcs int, source int, sink int) *FlowNetwork {
+	fmt.Println(n, nArcs, sink, source)
 	if source < 0 || source >= n {
 		panic("Source deve essere tra 0 e n-1")
 	}
@@ -30,8 +39,8 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 		panic("Source e Sink devono essere nodi diversi")
 	}
 
-	outStars := make([][]*FlowEdge, n)
-	inStars := make([][]*FlowEdge, n)
+	outStars := make([][]*FlowEdge, nArcs)
+	inStars := make([][]*FlowEdge, nArcs)
 	for i := 0; i < n; i++ {
 		outStars[i] = []*FlowEdge{}
 		inStars[i] = []*FlowEdge{}
@@ -44,6 +53,46 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 		OutStars: outStars,
 		InStars:  inStars,
 	}
+}
+
+func NewNetworkFromDIMACS(path string) *FlowNetwork {
+	file, _ := os.Open(path)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	nNodes := 0
+	nArcs := 0
+	source := 0
+	sink := 0
+	fn := &FlowNetwork{}
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Split(line, " ")
+		if line == "" || parts[0] == "c" {
+			continue
+		}
+		if parts[0] == "p" {
+			nNodes, _ = strconv.Atoi(parts[2])
+			nArcs, _ = strconv.Atoi(parts[3])
+			continue
+		}
+		if parts[0] == "n" {
+			if parts[2] == "s" {
+				source, _ = strconv.Atoi(parts[1])
+			}
+			if parts[2] == "t" {
+				sink, _ = strconv.Atoi(parts[1])
+				fn = NewFlowNetwork(nNodes, nArcs, source-1, sink-1)
+			}
+			continue
+		}
+		if parts[0] == "a" {
+			from, _ := strconv.Atoi(parts[1])
+			to, _ := strconv.Atoi(parts[2])
+			capacity, _ := strconv.Atoi(parts[3])
+			fn.AddEdge(from-1, to-1, capacity)
+		}
+	}
+	return fn
 }
 
 func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
