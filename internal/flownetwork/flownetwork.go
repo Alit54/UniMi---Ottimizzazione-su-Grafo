@@ -113,7 +113,6 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 		To:       to,
 		Capacity: capacity,
 		Flow:     0,
-		Reverse:  len(fn.OutStars[to]),
 	}
 	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
 	fn.InStars[to] = append(fn.InStars[to], &directArc)
