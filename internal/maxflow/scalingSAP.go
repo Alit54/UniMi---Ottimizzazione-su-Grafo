@@ -7,16 +7,20 @@ import (
 
 type ScalingSAP struct{}
 
-func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
+func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	maxCapacity := csSap.findMaxCapacity(fn)
 	delta := csSap.initializeDelta(maxCapacity)
 	sap := ShortestAugmentingPath{}
 	for delta >= 1 {
-		_, iter := sap.RunWithThreshold(fn, delta, saveSteps)
-		iterations += iter
+		stats.Phases++
+		tempFlow, tempStats := sap.RunWithThreshold(fn, delta, saveSteps)
+		maxFlow += tempFlow
+		stats.Advance += tempStats.Advance
+		stats.Retreats += tempStats.Retreats
+		stats.Augments += tempStats.Augments
 		delta /= 2
 	}
-	return fn.GetMaxFlowValue(), iterations
+	return
 }
 
 func (csSap ScalingSAP) initializeDelta(maxCapacity int) int {

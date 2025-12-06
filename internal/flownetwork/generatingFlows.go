@@ -74,7 +74,7 @@ func arcIDToNodes(arcID, n int) (from, to int) {
 	return from, to
 }
 
-// isReachable controlla, tramite una BFS, se il nodo sink è raggiungibile da source, per permettere almeno una soluzione ammissibile nel problema di maxflow.
+// isReachable controlla, tramite una BFS, se il nodo sink è raggiungibile da source, per permettere almeno una soluzione ammissibile nel problema di graphical_steps.
 func (fn *FlowNetwork) isReachable(source, sink int) bool {
 	visited := make(map[int]bool, fn.N)
 	queue := []int{source}

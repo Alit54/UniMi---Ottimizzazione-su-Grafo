@@ -10,15 +10,15 @@ import (
 
 type CapacityScaling struct{}
 
-func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
+func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	maxCapacity := cs.findMaxCapacity(fn)
 	delta := cs.initializeDelta(maxCapacity)
 	step := 0
-	iterations = 0
 	if saveSteps {
 		cs.saveStep(fn, step, nil, 0, delta, "Fase iniziale")
 	}
 	for delta >= 1 {
+		stats.Phases++
 		for {
 			path, minCap := cs.findAugmentingPath(fn, delta)
 			if path == nil {
@@ -29,6 +29,7 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (max
 				cs.saveStep(fn, step, path, minCap, delta, fmt.Sprintf("Trovato percorso con capacita' %d", minCap))
 			}
 			AugmentFlow(fn, path, minCap)
+			stats.Augments++
 			if saveSteps {
 				step++
 				cs.saveStep(fn, step, path, minCap, delta, fmt.Sprintf("Aumento di %d unita'", minCap))
@@ -45,7 +46,7 @@ func (cs *CapacityScaling) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (max
 		step++
 		cs.saveStep(fn, step, nil, 0, 0, fmt.Sprintf("Fase finale - MaxFlow = %d", maxFlow))
 	}
-	return maxFlow, iterations
+	return
 }
 
 func (cs *CapacityScaling) findMaxCapacity(fn *flownetwork.FlowNetwork) int {
@@ -133,7 +134,7 @@ func (cs *CapacityScaling) saveStep(
 	scalingDelta int,
 	description string) {
 	snapshot := cs.createSnapshot(fn, path, delta, scalingDelta, description)
-	filename := fmt.Sprintf("export/maxflow/capacity_scaling/step_%04d.json", step)
+	filename := fmt.Sprintf("export/graphical_steps/capacity_scaling/step_%04d.json", step)
 	file, _ := os.Create(filename)
 	defer file.Close()
 	file.WriteString(snapshot)

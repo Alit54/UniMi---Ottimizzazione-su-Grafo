@@ -10,8 +10,7 @@ import (
 
 type BasicShortestAugmentingPath struct{}
 
-func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
-	advances, retreats, augments := 0, 0, 0
+func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	current := fn.Source
 	step := 0
 	if saveSteps {
@@ -20,9 +19,8 @@ func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSte
 	}
 	distance, number := sap.exactDistance(fn)
 	if distance[fn.Source] >= fn.N {
-		return 0, 0
+		return
 	}
-	iterations = 0
 	predecessor := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
 		predecessor[i] = -1
@@ -35,8 +33,7 @@ func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSte
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance)
 		if admissibleEdge != -1 {
 			// ADVANCE
-			advances++
-			iterations++
+			stats.Advance++
 			edge := fn.OutStars[current][admissibleEdge]
 			next := edge.To
 			predecessor[next] = current
@@ -47,8 +44,7 @@ func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSte
 			}
 			if current == fn.Sink {
 				delta, path := sap.augment(fn, predecessor)
-				augments++
-				iterations++
+				stats.Augments++
 				if saveSteps {
 					step++
 					sap.saveStep(fn, step, "Augment", fmt.Sprintf("Augmenting Path trovato (Cap: %d)", delta), current, distance, path)
@@ -61,8 +57,7 @@ func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSte
 			if endTest {
 				break
 			}
-			retreats++
-			iterations++
+			stats.Retreats++
 			if saveSteps {
 				step++
 				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreat del nodo %d: (%d -> %d)", current, oldLabel, distance[current]), current, distance, nil)
@@ -73,10 +68,7 @@ func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSte
 		}
 	}
 	maxFlow = fn.GetMaxFlowValue()
-	/*fmt.Println("Advances: ", advances)
-	fmt.Println("Retreats: ", retreats)
-	fmt.Println("Augments: ", augments)
-	*/return
+	return
 }
 
 func (sap *BasicShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) ([]int, []int) {
@@ -244,7 +236,7 @@ func (sap *BasicShortestAugmentingPath) saveStep(
 	}
 
 	// Scrittura su file
-	filename := fmt.Sprintf("export/maxflow/shortest_augmenting_path/step_%04d.json", step)
+	filename := fmt.Sprintf("export/graphical_steps/shortest_augmenting_path/step_%04d.json", step)
 	file, _ := os.Create(filename)
 	defer file.Close()
 	jsonData, _ := json.MarshalIndent(snap, "", "  ")

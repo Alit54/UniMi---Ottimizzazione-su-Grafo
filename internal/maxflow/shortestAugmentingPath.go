@@ -10,12 +10,11 @@ import (
 
 type ShortestAugmentingPath struct{}
 
-func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
+func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	return sap.RunWithThreshold(fn, 1, saveSteps)
 }
 
-func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork, threshold int, saveSteps bool) (maxFlow int, iterations int) {
-	advances, retreats, augments := 0, 0, 0
+func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork, threshold int, saveSteps bool) (maxFlow int, stats Stats) {
 	current := fn.Source
 	step := 0
 	if saveSteps {
@@ -24,9 +23,8 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 	}
 	distance, number := sap.exactDistance(fn, threshold)
 	if distance[fn.Source] >= fn.N {
-		return 0, 0
+		return
 	}
-	iterations = 0
 	predecessor := make([]int, fn.N)
 	currentArc := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
@@ -40,8 +38,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance, currentArc, threshold)
 		if admissibleEdge != -1 {
 			// ADVANCE
-			advances++
-			iterations++
+			stats.Advance++
 			edge := fn.OutStars[current][admissibleEdge]
 			next := edge.To
 			predecessor[next] = current
@@ -52,8 +49,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 			}
 			if current == fn.Sink {
 				delta, path := sap.augment(fn, predecessor)
-				augments++
-				iterations++
+				stats.Augments++
 				if saveSteps {
 					step++
 					sap.saveStep(fn, step, "Augment", fmt.Sprintf("Augmenting Path trovato (Cap: %d)", delta), current, distance, path)
@@ -66,8 +62,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 			if endTest {
 				break
 			}
-			retreats++
-			iterations++
+			stats.Retreats++
 			if saveSteps {
 				step++
 				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreat del nodo %d: (%d -> %d)", current, oldLabel, distance[current]), current, distance, nil)
@@ -78,10 +73,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 		}
 	}
 	maxFlow = fn.GetMaxFlowValue()
-	/*fmt.Println("Advances: ", advances)
-	fmt.Println("Retreats: ", retreats)
-	fmt.Println("Augments: ", augments)
-	*/return
+	return
 }
 
 func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, threshold int) ([]int, []int) {
@@ -252,7 +244,7 @@ func (sap *ShortestAugmentingPath) saveStep(
 	}
 
 	// Scrittura su file
-	filename := fmt.Sprintf("export/maxflow/shortest_augmenting_path/step_%04d.json", step)
+	filename := fmt.Sprintf("export/graphical_steps/shortest_augmenting_path/step_%04d.json", step)
 	file, _ := os.Create(filename)
 	defer file.Close()
 	jsonData, _ := json.MarshalIndent(snap, "", "  ")

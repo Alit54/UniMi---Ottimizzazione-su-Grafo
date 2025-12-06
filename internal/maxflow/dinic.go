@@ -10,8 +10,7 @@ import (
 
 type Dinic struct{}
 
-func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, iterations int) {
-	iterations = 0
+func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	step := 0
 	if saveSteps {
 		initLevels := make([]int, fn.N)
@@ -22,6 +21,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 	}
 	for {
 		level := d.bfs(fn)
+		stats.Phases++
 		if level[fn.Sink] == -1 {
 			break
 		}
@@ -35,7 +35,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 				break
 			}
 			maxFlow += flow
-			iterations++
+			stats.Augments++
 			if saveSteps {
 				step++
 				d.saveStep(fn, step, "Flow Pushed", fmt.Sprintf("Flusso aumentato di %d", flow), level, path)
@@ -50,7 +50,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, i
 		}
 		d.saveStep(fn, step, "End", fmt.Sprintf("Terminato. MaxFlow: %d", maxFlow), finalLevels, nil)
 	}
-	return maxFlow, iterations
+	return
 }
 
 func (d *Dinic) bfs(fn *flownetwork.FlowNetwork) []int {
@@ -207,7 +207,7 @@ func (d *Dinic) saveStep(
 	}
 
 	// Cartella Dinic
-	folder := "export/maxflow/dinic"
+	folder := "export/graphical_steps/dinic"
 	_ = os.MkdirAll(folder, os.ModePerm)
 
 	filename := fmt.Sprintf("%s/step_%04d.json", folder, step)
