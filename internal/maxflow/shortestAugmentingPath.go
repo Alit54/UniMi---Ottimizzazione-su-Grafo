@@ -38,14 +38,14 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance, currentArc, threshold)
 		if admissibleEdge != -1 {
 			// ADVANCE
-			stats.Advance++
+			stats.Advances++
 			edge := fn.OutStars[current][admissibleEdge]
 			next := edge.To
 			predecessor[next] = current
 			current = next
 			if saveSteps {
 				step++
-				sap.saveStep(fn, step, "Advance", fmt.Sprintf("Advance al nodo %d", current), current, distance, nil)
+				sap.saveStep(fn, step, "Advances", fmt.Sprintf("Advances al nodo %d", current), current, distance, nil)
 			}
 			if current == fn.Sink {
 				delta, path := sap.augment(fn, predecessor)
@@ -190,7 +190,7 @@ func (sap *ShortestAugmentingPath) saveStep(
 
 	type Snapshot struct {
 		Iteration   int        `json:"step"`
-		StepType    string     `json:"step_type"` // Advance, Retreat, Augment
+		StepType    string     `json:"step_type"` // Advances, Retreat, Augment
 		Description string     `json:"description"`
 		Nodes       []NodeInfo `json:"nodes"`
 		Edges       []EdgeInfo `json:"edges"`

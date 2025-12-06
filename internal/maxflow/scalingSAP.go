@@ -15,7 +15,7 @@ func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlo
 		stats.Phases++
 		tempFlow, tempStats := sap.RunWithThreshold(fn, delta, saveSteps)
 		maxFlow += tempFlow
-		stats.Advance += tempStats.Advance
+		stats.Advances += tempStats.Advances
 		stats.Retreats += tempStats.Retreats
 		stats.Augments += tempStats.Augments
 		delta /= 2
