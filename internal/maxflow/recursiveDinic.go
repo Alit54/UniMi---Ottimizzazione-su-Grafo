@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-type Dinic struct{}
+type RecursiveDinic struct{}
 
-func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
+func (d *RecursiveDinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	step := 0
 	if saveSteps {
 		initLevels := make([]int, fn.N)
@@ -29,8 +29,9 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, s
 			step++
 			d.saveStep(fn, step, "BFS", "Level Graph costruito", level, nil)
 		}
+		currentArc := make([]int, fn.N)
 		for {
-			flow, path := d.dfs(fn, level, saveSteps, &step)
+			flow, path := d.dfs(fn, fn.Source, math.MaxInt, level, currentArc)
 			if flow == 0 {
 				break
 			}
@@ -53,7 +54,7 @@ func (d *Dinic) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, s
 	return
 }
 
-func (d *Dinic) bfs(fn *flownetwork.FlowNetwork) []int {
+func (d *RecursiveDinic) bfs(fn *flownetwork.FlowNetwork) []int {
 	label := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
 		label[i] = -1
@@ -75,62 +76,30 @@ func (d *Dinic) bfs(fn *flownetwork.FlowNetwork) []int {
 	return label
 }
 
-func (d *Dinic) dfs(fn *flownetwork.FlowNetwork, level []int, saveSteps bool, step *int) (int, []int) {
-	predecessor := make([]int, fn.N)
-	edgeIndex := make([]int, fn.N)
-	stack := []int{fn.Source}
-	for i := 0; i < fn.N; i++ {
-		predecessor[i] = -1
-		edgeIndex[i] = -1
+func (d *RecursiveDinic) dfs(fn *flownetwork.FlowNetwork, current int, flow int, level []int, currentArc []int) (int, []int) {
+	if current == fn.Sink {
+		return flow, []int{current}
 	}
-	for len(stack) > 0 {
-		current := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
-		if current == fn.Sink {
-			break
-		}
-		for id, edge := range fn.OutStars[current] {
-			residual := edge.Capacity - edge.Flow
-			next := edge.To
-			if predecessor[next] == -1 && residual > 0 && level[next] == level[current]+1 {
-				predecessor[next] = current
-				edgeIndex[next] = id
-				stack = append(stack, next)
+	for i := currentArc[current]; i < len(fn.OutStars[current]); i++ {
+		edge := fn.OutStars[current][i]
+		if edge.Capacity-edge.Flow > 0 && level[edge.To] == level[current]+1 {
+			pushed := min(flow, edge.Capacity-edge.Flow)
+			returnedFlow, path := d.dfs(fn, edge.To, pushed, level, currentArc)
+			if returnedFlow > 0 {
+				edge.Flow += returnedFlow
+				currentArc[current] = i
+				if path != nil {
+					path = append([]int{current}, path...)
+				}
+				return returnedFlow, path
 			}
 		}
+		currentArc[current]++
 	}
-	if predecessor[fn.Sink] == -1 {
-		return 0, nil
-	}
-	flow := math.MaxInt
-	path := []int{}
-	tempCurr := fn.Sink
-	for tempCurr != fn.Source {
-		path = append([]int{tempCurr}, path...)
-		prev := predecessor[tempCurr]
-		id := edgeIndex[tempCurr]
-		edge := fn.OutStars[prev][id]
-		if edge.Capacity-edge.Flow < flow {
-			flow = edge.Capacity - edge.Flow
-		}
-		tempCurr = prev
-	}
-	path = append([]int{fn.Source}, path...)
-	if saveSteps {
-		*step++
-		d.saveStep(fn, *step, "Augment Found", fmt.Sprintf("Blocking Path trovato (Cap: %d)", flow), level, path)
-	}
-	current := fn.Sink
-	for current != fn.Source {
-		previous := predecessor[current]
-		id := edgeIndex[current]
-		fn.PushFlowWithIndex(previous, id, flow)
-		current = previous
-	}
-	return flow, path
+	return 0, nil
 }
 
-func (d *Dinic) saveStep(
+func (d *RecursiveDinic) saveStep(
 	fn *flownetwork.FlowNetwork,
 	step int,
 	stepType string,
@@ -206,7 +175,7 @@ func (d *Dinic) saveStep(
 		Edges:       edges,
 	}
 
-	// Cartella Dinic
+	// Cartella RecursiveDinic
 	folder := "export/graphical_steps/dinic"
 	_ = os.MkdirAll(folder, os.ModePerm)
 

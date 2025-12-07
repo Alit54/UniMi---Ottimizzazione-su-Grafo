@@ -1,5 +1,13 @@
 package flownetwork
 
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
 // FlowEdge rappresenta un arco nel grafo, sia iniziale (Capacity) che dei residui (Flow). Rappresenta un arco (From -> To) e ha l'indice dell'arco inverso (To -> From).
 type FlowEdge struct {
 	From     int // Nodo sorgente
@@ -20,6 +28,7 @@ type FlowNetwork struct {
 
 // NewFlowNetwork crea una rete di flusso con n nodi, senza archi
 func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
+	fmt.Println(n, sink, source)
 	if source < 0 || source >= n {
 		panic("Source deve essere tra 0 e n-1")
 	}
@@ -46,6 +55,49 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 	}
 }
 
+func NewNetworkFromDIMACS(path string) *FlowNetwork {
+	file, _ := os.Open(path)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	nNodes := 0
+	source := 0
+	sink := 0
+	fn := &FlowNetwork{}
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Split(line, " ")
+		if line == "" || parts[0] == "c" {
+			continue
+		}
+		if parts[0] == "p" {
+			nNodes, _ = strconv.Atoi(parts[2])
+			continue
+		}
+		if parts[0] == "n" {
+			if parts[2] == "s" {
+				source, _ = strconv.Atoi(parts[1])
+			}
+			if parts[2] == "t" {
+				sink, _ = strconv.Atoi(parts[1])
+				fn = NewFlowNetwork(nNodes, source-1, sink-1)
+			}
+			continue
+		}
+		if parts[0] == "a" {
+			from, _ := strconv.Atoi(parts[1])
+			to, _ := strconv.Atoi(parts[2])
+			if fn.arcExists(from, to) {
+				continue
+			}
+			capacity, _ := strconv.Atoi(parts[3])
+			if capacity > 0 {
+				fn.AddEdge(from-1, to-1, capacity)
+			}
+		}
+	}
+	return fn
+}
+
 func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 	fn.validateArcs(from, to)
 	if capacity < 0 {
@@ -59,18 +111,8 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 		To:       to,
 		Capacity: capacity,
 		Flow:     0,
-		Reverse:  len(fn.OutStars[to]),
-	}
-	inverseArc := FlowEdge{
-		From:     to,
-		To:       from,
-		Capacity: 0,
-		Flow:     0,
-		Reverse:  len(fn.OutStars[from]) - 1,
 	}
 	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
-	fn.OutStars[to] = append(fn.OutStars[to], &inverseArc)
-	fn.InStars[from] = append(fn.InStars[from], &inverseArc)
 	fn.InStars[to] = append(fn.InStars[to], &directArc)
 }
 
@@ -83,26 +125,21 @@ func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
 		}
 	}
 	edge := fn.OutStars[from][edgeIndex]
-	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
-
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
 		panic("Delta supera la capacità residua disponibile")
 	}
 	edge.Flow += delta
-	reverseEdge.Flow -= delta
 }
 
 func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
 	edge := fn.OutStars[from][index]
-	reverseEdge := fn.OutStars[edge.To][edge.Reverse]
 
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
 		panic("Delta supera la capacità residua disponibile")
 	}
 	edge.Flow += delta
-	reverseEdge.Flow -= delta
 }
 
 // Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
@@ -130,4 +167,13 @@ func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if to < 0 || to >= fn.N {
 		panic("Nodo 'to' non valido")
 	}
+}
+
+func (fn *FlowNetwork) arcExists(from int, to int) bool {
+	for _, arc := range fn.OutStars[from] {
+		if arc.To == to {
+			return true
+		}
+	}
+	return false
 }

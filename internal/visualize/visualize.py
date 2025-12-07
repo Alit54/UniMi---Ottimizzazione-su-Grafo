@@ -6,7 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
-common_folder = "../../export/maxflow"
+common_folder = "../../export/graphical_steps"
 SEARCH_PATHS = [
     ("Capacity Scaling", "capacity_scaling"),
     ("Shortest Augmenting Path", "shortest_augmenting_path"),

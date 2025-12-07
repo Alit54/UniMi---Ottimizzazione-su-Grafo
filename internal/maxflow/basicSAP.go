@@ -8,25 +8,20 @@ import (
 	"os"
 )
 
-type ShortestAugmentingPath struct{}
+type BasicShortestAugmentingPath struct{}
 
-func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
-	return sap.RunWithThreshold(fn, 1, saveSteps)
-}
-
-func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork, threshold int, saveSteps bool) (maxFlow int, stats Stats) {
+func (sap *BasicShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
 	current := fn.Source
 	step := 0
 	if saveSteps {
 		initialDist := make([]int, fn.N)
 		sap.saveStep(fn, step, "Start", "Stato iniziale", current, initialDist, nil)
 	}
-	distance, number := sap.exactDistance(fn, threshold)
+	distance, number := sap.exactDistance(fn)
 	if distance[fn.Source] >= fn.N {
 		return
 	}
 	predecessor := make([]int, fn.N)
-	currentArc := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
 		predecessor[i] = -1
 	}
@@ -35,7 +30,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 		sap.saveStep(fn, step, "Start", "Distanze calcolate", current, distance, nil)
 	}
 	for distance[fn.Source] < fn.N {
-		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance, currentArc, threshold)
+		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance)
 		if admissibleEdge != -1 {
 			// ADVANCE
 			stats.Advances++
@@ -58,7 +53,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 			}
 		} else {
 			oldLabel := distance[current]
-			endTest := sap.retreat(fn, current, distance, number, currentArc, threshold)
+			endTest := sap.retreat(fn, current, distance, number)
 			if endTest {
 				break
 			}
@@ -76,7 +71,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 	return
 }
 
-func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, threshold int) ([]int, []int) {
+func (sap *BasicShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork) ([]int, []int) {
 	distance := make([]int, fn.N)
 	number := make([]int, fn.N+2)
 	for i := 0; i < fn.N; i++ {
@@ -92,7 +87,7 @@ func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, th
 		for _, edge := range fn.InStars[current] {
 			previous := edge.From
 			residual := edge.Capacity - edge.Flow
-			if distance[previous] > distance[current]+1 && residual >= threshold {
+			if distance[previous] > distance[current]+1 && residual > 0 {
 				number[distance[previous]]--
 				distance[previous] = distance[current] + 1
 				number[distance[previous]]++
@@ -103,23 +98,21 @@ func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, th
 	return distance, number
 }
 
-func (sap *ShortestAugmentingPath) findAdmissibleEdge(fn *flownetwork.FlowNetwork, node int, distance []int, currentArc []int, threshold int) int {
-	for i := currentArc[node]; i < len(fn.OutStars[node]); i++ {
-		edge := fn.OutStars[node][i]
+func (sap *BasicShortestAugmentingPath) findAdmissibleEdge(fn *flownetwork.FlowNetwork, node int, distance []int) int {
+	for id, edge := range fn.OutStars[node] {
 		residual := edge.Capacity - edge.Flow
-		if residual >= threshold && distance[node] == distance[edge.To]+1 {
-			currentArc[node] = i
-			return i
+		if residual > 0 && distance[node] == distance[edge.To]+1 {
+			return id
 		}
 	}
 	return -1
 }
 
-func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int, distance []int, number []int, currentArc []int, threshold int) bool {
+func (sap *BasicShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int, distance []int, number []int) bool {
 	minDistance := fn.N
 	for _, edge := range fn.OutStars[node] {
 		residual := edge.Capacity - edge.Flow
-		if residual >= threshold {
+		if residual > 0 {
 			if distance[edge.To] < minDistance {
 				minDistance = distance[edge.To]
 			}
@@ -131,11 +124,10 @@ func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int
 	}
 	distance[node] = minDistance + 1
 	number[distance[node]]++
-	currentArc[node] = 0
 	return false
 }
 
-func (sap *ShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predecessor []int) (int, []int) {
+func (sap *BasicShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predecessor []int) (int, []int) {
 	path := []int{}
 	node := fn.Sink
 	for node != fn.Source {
@@ -161,7 +153,7 @@ func (sap *ShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predeces
 	return delta, path
 }
 
-func (sap *ShortestAugmentingPath) saveStep(
+func (sap *BasicShortestAugmentingPath) saveStep(
 	fn *flownetwork.FlowNetwork,
 	step int,
 	stepType string,
