@@ -4,7 +4,12 @@
 
 package flownetwork
 
-import "encoding/json"
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"os"
+)
 
 // ToJSON esporta il FlowNetwork in formato JSON per NetworkX
 func (fn *FlowNetwork) ToJSON() string {
@@ -62,4 +67,37 @@ func (fn *FlowNetwork) ToJSON() string {
 	}
 
 	return string(jsonData)
+}
+
+func (fn *FlowNetwork) ToDIMACS(graphName string, path string, comment string) {
+	fileName := path + "/" + graphName + ".max"
+	file, _ := os.Create(fileName)
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	defer writer.Flush()
+
+	edgeCount := 0
+	for i := 0; i < fn.N; i++ {
+		for _, edge := range fn.OutStars[i] {
+			if edge.Capacity > 0 {
+				edgeCount++
+			}
+		}
+	}
+	maxEdges := fn.N * (fn.N - 1)
+	density := float64(edgeCount) / float64(maxEdges)
+	fmt.Fprintf(writer, "c %s\n", comment)
+	fmt.Fprintf(writer, "c Nome del grafo: %s\n", graphName)
+	fmt.Fprintf(writer, "c Densità: %f\n", density)
+	fmt.Fprintf(writer, "p max %d %d\n", fn.N, edgeCount)
+	fmt.Fprintf(writer, "n %d s\n", fn.Source+1)
+	fmt.Fprintf(writer, "n %d t\n", fn.Sink+1)
+
+	for i := 0; i < fn.N; i++ {
+		for _, edge := range fn.OutStars[i] {
+			if edge.Capacity > 0 {
+				fmt.Fprintf(writer, "a %d %d %d\n", edge.From+1, edge.To+1, edge.Capacity)
+			}
+		}
+	}
 }

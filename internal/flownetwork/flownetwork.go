@@ -27,8 +27,8 @@ type FlowNetwork struct {
 }
 
 // NewFlowNetwork crea una rete di flusso con n nodi, senza archi
-func NewFlowNetwork(n int, nArcs int, source int, sink int) *FlowNetwork {
-	fmt.Println(n, nArcs, sink, source)
+func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
+	fmt.Println(n, sink, source)
 	if source < 0 || source >= n {
 		panic("Source deve essere tra 0 e n-1")
 	}
@@ -39,8 +39,8 @@ func NewFlowNetwork(n int, nArcs int, source int, sink int) *FlowNetwork {
 		panic("Source e Sink devono essere nodi diversi")
 	}
 
-	outStars := make([][]*FlowEdge, nArcs)
-	inStars := make([][]*FlowEdge, nArcs)
+	outStars := make([][]*FlowEdge, n)
+	inStars := make([][]*FlowEdge, n)
 	for i := 0; i < n; i++ {
 		outStars[i] = []*FlowEdge{}
 		inStars[i] = []*FlowEdge{}
@@ -60,7 +60,6 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	nNodes := 0
-	nArcs := 0
 	source := 0
 	sink := 0
 	fn := &FlowNetwork{}
@@ -72,7 +71,6 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 		}
 		if parts[0] == "p" {
 			nNodes, _ = strconv.Atoi(parts[2])
-			nArcs, _ = strconv.Atoi(parts[3])
 			continue
 		}
 		if parts[0] == "n" {
@@ -81,7 +79,7 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 			}
 			if parts[2] == "t" {
 				sink, _ = strconv.Atoi(parts[1])
-				fn = NewFlowNetwork(nNodes, nArcs, source-1, sink-1)
+				fn = NewFlowNetwork(nNodes, source-1, sink-1)
 			}
 			continue
 		}
