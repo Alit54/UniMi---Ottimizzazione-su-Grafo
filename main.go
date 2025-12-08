@@ -14,97 +14,44 @@ func generateCustomBenchmarkProblems() {
 	/*
 		Generazione di diversi grafi, spaziando su pochi/tanti nodi, grafi sparsi/densi e capacità grandi/piccole
 	*/
-
-	// Grafo piccolo e denso, capacità piccole
 	source := 0
 	sink := 1
-	nNodes := 1000
-	density := 0.5
-	minCap := 1
-	maxCap := 10
-	fn := &flownetwork.FlowNetwork{}
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
 
-	// Grafo piccolo e denso, capacità grandi
-	nNodes = 1000
-	density = 0.5
-	minCap = 1
-	maxCap = 100000
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
+	// Grafo Piccolo e Denso, Capacità piccole
+	generateProblem(1000, 0.25, 10, source, sink)
+	// Grafo Piccolo e Denso, Capacità grandi
+	generateProblem(1000, 0.25, 100000, source, sink)
+	// Grafo Piccolo e Sparso, Capacità piccole
+	generateProblem(1000, 0.005, 10, source, sink)
+	// Grafo Piccolo e Sparso, Capacità grandi
+	generateProblem(1000, 0.005, 100000, source, sink)
+	// Grafo Piccolo e Quasi Completo, Capacità piccole
+	generateProblem(1000, 0.9, 10, source, sink)
+	// Grafo Piccolo e Quasi Completo, Capacità grandi
+	generateProblem(1000, 0.9, 100000, source, sink)
 
-	// Grafo piccolo e sparso, capacità piccole
-	nNodes = 1000
-	density = 0.01
-	minCap = 1
-	maxCap = 10
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
+	// Grafo Medio e Denso, Capacità piccole
+	generateProblem(5000, 0.5, 10, source, sink)
+	// Grafo Medio e Denso, Capacità grandi
+	generateProblem(5000, 0.5, 100000, source, sink)
+	// Grafo Medio e Sparso, Capacità piccole
+	generateProblem(5000, 0.005, 10, source, sink)
+	// Grafo Medio e Sparso, Capacità grandi
+	generateProblem(5000, 0.005, 100000, source, sink)
 
-	// Grafo piccolo e sparso, capacità grandi
-	nNodes = 1000
-	density = 0.01
-	minCap = 1
-	maxCap = 100000
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
+	// Grafo Grande e Sparso, Capacità piccole
+	generateProblem(50000, 0.0001, 10, source, sink)
+	// Grafo Grande e Sparso, Capacità grandi
+	generateProblem(50000, 0.0001, 100000, source, sink)
+	// Grafo Grande e Medio, Capacità piccole
+	generateProblem(50000, 0.01, 10, source, sink)
+	// Grafo Grande e Medio, Capacità grandi
+	generateProblem(50000, 0.01, 100000, source, sink)
 
-	// Grafo medio e denso, capacità piccole
-	nNodes = 20000
-	density = 0.5
-	minCap = 1
-	maxCap = 10
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
+}
 
-	// Grafo medio e denso, capacità grandi
-	nNodes = 20000
-	density = 0.5
-	minCap = 1
-	maxCap = 100000
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
-
-	// Grafo grande e sparso, capacità piccole
-	nNodes = 1000000
-	density = 0.0001
-	minCap = 1
-	maxCap = 10
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
-
-	// Grafo grande e sparso, capacità grandi
-	nNodes = 1000000
-	density = 0.0001
-	minCap = 1
-	maxCap = 100000
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
-
-	// Grafo grande e "meno denso", capacità piccole
-	nNodes = 500000
-	density = 0.002
-	minCap = 1
-	maxCap = 10
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
-
-	// Grafo grande e "meno denso", capacità grandi
-	nNodes = 500000
-	density = 0.002
-	minCap = 1
-	maxCap = 100000
-	fn = flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, minCap, maxCap)
+func generateProblem(nNodes int, density float64, maxCap int, source int, sink int) {
+	fn := flownetwork.NewFlowNetwork(nNodes, source, sink)
+	fn.GenerateRandomArcs(density, 1, maxCap)
 	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
 }
