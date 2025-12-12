@@ -35,7 +35,7 @@ func Benchmark(fn *flownetwork.FlowNetwork, nameAlg string, algorithm interface{
 	return Result{
 		Graph:     path,
 		Nodes:     fn.N,
-		Edges:     len(fn.OutStars),
+		Edges:     fn.Arcs,
 		Algorithm: nameAlg,
 		MaxFlow:   maxFlow,
 		Time:      averageTime,

@@ -6,12 +6,11 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"strconv"
 )
 
-func Run() {
+func Run(input string, output string) {
 	os.MkdirAll("export", os.ModePerm)
-	csvFile, _ := os.Create("export/benchmark_results.csv")
+	csvFile, _ := os.OpenFile(output, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	defer csvFile.Close()
 
 	csvWriter := csv.NewWriter(csvFile)
@@ -23,7 +22,7 @@ func Run() {
 		"Edges",
 		"Algorithm",
 		"MaxFlow",
-		"Time",
+		"Time (microseconds)",
 		"Augments",
 		"Retreats",
 		"Advances",
@@ -38,7 +37,7 @@ func Run() {
 	toRun["Capacity Scaling con SAP"] = &maxflow.ScalingSAP{}
 	toRun["Recursive Dinic"] = &maxflow.RecursiveDinic{}
 
-	networks := LoadSuite("data/flownetwork/BVZ-tsukuba")
+	networks := LoadSuite(input)
 	for _, network := range networks {
 		fn := flownetwork.NewNetworkFromDIMACS(network)
 		for i, alg := range toRun {
@@ -50,7 +49,7 @@ func Run() {
 				fmt.Sprintf("%d", result.Edges),
 				result.Algorithm,
 				fmt.Sprintf("%d", result.MaxFlow),
-				strconv.FormatInt(int64(result.Time), 10),
+				fmt.Sprintf("%d", result.Time.Nanoseconds()),
 				fmt.Sprintf("%d", result.Augments),
 				fmt.Sprintf("%d", result.Retreats),
 				fmt.Sprintf("%d", result.Phases),
@@ -58,7 +57,7 @@ func Run() {
 			}
 			csvWriter.Write(row)
 			csvWriter.Flush()
-			fmt.Printf("-> %s: %d ms | Flow: %d\n", result.Algorithm, result.Time, result.MaxFlow)
+			fmt.Printf("-> %s: %.2f s | Flow: %d\n", result.Algorithm, float64(result.Time)/1e9, result.MaxFlow)
 		}
 	}
 }
