@@ -22,7 +22,7 @@ func Run(input string, output string) {
 		"Edges",
 		"Algorithm",
 		"MaxFlow",
-		"Time (microseconds)",
+		"Time (nanoseconds)",
 		"Augments",
 		"Retreats",
 		"Advances",
