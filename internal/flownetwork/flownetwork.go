@@ -20,6 +20,7 @@ type FlowEdge struct {
 // FlowNetwork rappresenta una rete di flusso.
 type FlowNetwork struct {
 	N        int           // Numero di nodi
+	Arcs     int           // Numero di archi
 	OutStars [][]*FlowEdge // Lista di adiacenza: OutStars[i] = archi uscenti da i
 	InStars  [][]*FlowEdge // Lista di adiacenza: InStars[i] = archi entranti in i
 	Source   int           // Nodo sorgente
@@ -86,7 +87,7 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 		if parts[0] == "a" {
 			from, _ := strconv.Atoi(parts[1])
 			to, _ := strconv.Atoi(parts[2])
-			if fn.arcExists(from, to) {
+			if fn.arcExists(from-1, to-1) {
 				continue
 			}
 			capacity, _ := strconv.Atoi(parts[3])
@@ -114,6 +115,7 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 	}
 	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
 	fn.InStars[to] = append(fn.InStars[to], &directArc)
+	fn.Arcs++
 }
 
 // PushFlow invia δ unità di flusso lungo l'arco che va da from a

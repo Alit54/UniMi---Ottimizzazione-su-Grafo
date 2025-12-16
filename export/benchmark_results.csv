@@ -1,0 +1,296 @@
+Graph,Nodes,Edges,Algorithm,MaxFlow,Time (nanoseconds),Augments,Retreats,Advances,Phases
+data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Capacity Scaling,175938,3139500,9,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Shortest Augmenting Path,0,23387,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Dinic,175938,2010500,15,0,5,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Capacity Scaling con SAP,175938,487970,0,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Recursive Dinic,0,1726,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode1.max,1000,5002,Capacity Scaling,101218,2023300,8,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode1.max,1000,5002,Shortest Augmenting Path,0,23121,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode1.max,1000,5002,Dinic,101218,2019600,81,0,8,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode1.max,1000,5002,Capacity Scaling con SAP,101218,528329,0,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode1.max,1000,5002,Recursive Dinic,0,1747,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode2.max,1000,2985,Shortest Augmenting Path,0,3939,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode2.max,1000,2985,Dinic,0,1511,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode2.max,1000,2985,Capacity Scaling con SAP,300000,70623,0,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode2.max,1000,2985,Recursive Dinic,300000,510900,3,0,2,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode2.max,1000,2985,Capacity Scaling,300000,1026000,3,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode3.max,1000,5029,Capacity Scaling,176619,38357000,210,0,17,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode3.max,1000,5029,Shortest Augmenting Path,0,23273,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode3.max,1000,5029,Dinic,176300,6085300,346,0,21,0
+data\flownetwork\custom\custom.n1000d0.50c100000mode3.max,1000,5029,Capacity Scaling con SAP,176619,2014800,210,14924,17,17518
+data\flownetwork\custom\custom.n1000d0.50c100000mode3.max,1000,5029,Recursive Dinic,0,1978,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c10mode0.max,1000,5000,Capacity Scaling con SAP,18,120940,0,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode0.max,1000,5000,Recursive Dinic,0,1745,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c10mode0.max,1000,5000,Capacity Scaling,18,190422,0,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode0.max,1000,5000,Shortest Augmenting Path,0,23517,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c10mode0.max,1000,5000,Dinic,18,2019500,9,0,6,0
+data\flownetwork\custom\custom.n1000d0.50c10mode1.max,1000,5002,Capacity Scaling,21,191619,0,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode1.max,1000,5002,Shortest Augmenting Path,0,24243,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c10mode1.max,1000,5002,Dinic,0,1712,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c10mode1.max,1000,5002,Capacity Scaling con SAP,21,90169,0,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode1.max,1000,5002,Recursive Dinic,21,2011100,11,0,5,0
+data\flownetwork\custom\custom.n1000d0.50c10mode2.max,1000,2985,Capacity Scaling,30,1060000,3,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode2.max,1000,2985,Shortest Augmenting Path,30,509700,3,2,0,1001
+data\flownetwork\custom\custom.n1000d0.50c10mode2.max,1000,2985,Dinic,0,1531,0,0,1,0
+data\flownetwork\custom\custom.n1000d0.50c10mode2.max,1000,2985,Capacity Scaling con SAP,30,1554300,3,2,4,1001
+data\flownetwork\custom\custom.n1000d0.50c10mode2.max,1000,2985,Recursive Dinic,30,518900,3,0,2,0
+data\flownetwork\custom\custom.n1000d0.50c10mode3.max,1000,5107,Capacity Scaling,22,2008800,13,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode3.max,1000,5107,Shortest Augmenting Path,0,4137,0,0,0,0
+data\flownetwork\custom\custom.n1000d0.50c10mode3.max,1000,5107,Dinic,22,1027300,13,0,5,0
+data\flownetwork\custom\custom.n1000d0.50c10mode3.max,1000,5107,Capacity Scaling con SAP,22,22402,0,0,4,0
+data\flownetwork\custom\custom.n1000d0.50c10mode3.max,1000,5107,Recursive Dinic,22,1028200,13,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode0.max,1000,250000,Capacity Scaling,12206700,1957562600,472,0,17,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode0.max,1000,250000,Shortest Augmenting Path,12206700,2990700,613,248,0,2044
+data\flownetwork\custom\custom.n1000d25.00c100000mode0.max,1000,250000,Dinic,12206700,156138000,603,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode0.max,1000,250000,Capacity Scaling con SAP,12206700,22920900,472,615,17,2039
+data\flownetwork\custom\custom.n1000d25.00c100000mode0.max,1000,250000,Recursive Dinic,12206700,11012500,613,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode1.max,1000,250002,Capacity Scaling con SAP,757319,23841000,260,22,17,755
+data\flownetwork\custom\custom.n1000d25.00c100000mode1.max,1000,250002,Recursive Dinic,757319,8976200,910,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode1.max,1000,250002,Capacity Scaling,757319,804171800,260,0,17,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode1.max,1000,250002,Shortest Augmenting Path,757319,2989200,910,214,0,2932
+data\flownetwork\custom\custom.n1000d25.00c100000mode1.max,1000,250002,Dinic,757319,322563200,865,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode2.max,1000,2985,Capacity Scaling,300000,1503900,3,0,17,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode2.max,1000,2985,Shortest Augmenting Path,300000,605700,3,2,0,1001
+data\flownetwork\custom\custom.n1000d25.00c100000mode2.max,1000,2985,Dinic,300000,424200,3,0,2,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode2.max,1000,2985,Capacity Scaling con SAP,300000,1555300,3,2,17,1001
+data\flownetwork\custom\custom.n1000d25.00c100000mode2.max,1000,2985,Recursive Dinic,0,1518,0,0,1,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode3.max,1000,248728,Capacity Scaling con SAP,205423,10143900,225,306,17,924
+data\flownetwork\custom\custom.n1000d25.00c100000mode3.max,1000,248728,Recursive Dinic,205423,4656100,229,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode3.max,1000,248728,Capacity Scaling,205423,464489000,225,0,17,0
+data\flownetwork\custom\custom.n1000d25.00c100000mode3.max,1000,248728,Shortest Augmenting Path,205423,2045600,229,247,0,867
+data\flownetwork\custom\custom.n1000d25.00c100000mode3.max,1000,248728,Dinic,205423,190564500,328,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode0.max,1000,250000,Shortest Augmenting Path,1308,2052300,486,205,0,1596
+data\flownetwork\custom\custom.n1000d25.00c10mode0.max,1000,250000,Dinic,1308,126306200,497,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode0.max,1000,250000,Capacity Scaling con SAP,1308,5645100,342,159,4,1145
+data\flownetwork\custom\custom.n1000d25.00c10mode0.max,1000,250000,Recursive Dinic,1308,10266300,486,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode0.max,1000,250000,Capacity Scaling,1308,1353569100,342,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode1.max,1000,250002,Capacity Scaling,661,1152496400,277,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode1.max,1000,250002,Shortest Augmenting Path,661,4113100,462,251,0,1573
+data\flownetwork\custom\custom.n1000d25.00c10mode1.max,1000,250002,Dinic,661,143409700,473,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c10mode1.max,1000,250002,Capacity Scaling con SAP,661,6129400,277,348,4,1154
+data\flownetwork\custom\custom.n1000d25.00c10mode1.max,1000,250002,Recursive Dinic,661,8246100,462,0,5,0
+data\flownetwork\custom\custom.n1000d25.00c10mode2.max,1000,2985,Capacity Scaling,30,595500,3,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode2.max,1000,2985,Shortest Augmenting Path,30,548000,3,2,0,1001
+data\flownetwork\custom\custom.n1000d25.00c10mode2.max,1000,2985,Dinic,0,1513,0,0,1,0
+data\flownetwork\custom\custom.n1000d25.00c10mode2.max,1000,2985,Capacity Scaling con SAP,30,18138,0,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode2.max,1000,2985,Recursive Dinic,0,1526,0,0,1,0
+data\flownetwork\custom\custom.n1000d25.00c10mode3.max,1000,249100,Recursive Dinic,281,4052600,267,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode3.max,1000,249100,Capacity Scaling,281,511185500,264,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode3.max,1000,249100,Shortest Augmenting Path,281,2059100,267,282,0,1011
+data\flownetwork\custom\custom.n1000d25.00c10mode3.max,1000,249100,Dinic,281,105737000,265,0,4,0
+data\flownetwork\custom\custom.n1000d25.00c10mode3.max,1000,249100,Capacity Scaling con SAP,281,4117900,264,279,4,1003
+data\flownetwork\custom\custom.n1000d90.00c100000mode0.max,1000,832292,Capacity Scaling con SAP,41526678,169978100,1434,631,17,4565
+data\flownetwork\custom\custom.n1000d90.00c100000mode0.max,1000,832292,Recursive Dinic,41526678,47235200,1814,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode0.max,1000,832292,Capacity Scaling,41526678,37841388900,1434,0,17,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode0.max,1000,832292,Shortest Augmenting Path,41526678,30761300,1814,765,0,5503
+data\flownetwork\custom\custom.n1000d90.00c100000mode0.max,1000,832292,Dinic,41526678,3030798900,1829,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode1.max,1000,832418,Capacity Scaling,3149899,24458989600,932,0,16,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode1.max,1000,832418,Shortest Augmenting Path,3149899,43068500,3168,792,0,9584
+data\flownetwork\custom\custom.n1000d90.00c100000mode1.max,1000,832418,Dinic,3149899,3589436600,3128,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode1.max,1000,832418,Capacity Scaling con SAP,3149899,154393300,932,114,16,2621
+data\flownetwork\custom\custom.n1000d90.00c100000mode1.max,1000,832418,Recursive Dinic,3149899,48847500,3168,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode2.max,1000,2985,Capacity Scaling,300000,746691,0,0,17,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode2.max,1000,2985,Shortest Augmenting Path,0,3967,0,0,0,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode2.max,1000,2985,Dinic,0,1526,0,0,1,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode2.max,1000,2985,Capacity Scaling con SAP,300000,525800,3,2,17,1001
+data\flownetwork\custom\custom.n1000d90.00c100000mode2.max,1000,2985,Recursive Dinic,0,1550,0,0,1,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode3.max,1000,897518,Capacity Scaling,523812,6122575000,892,0,17,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode3.max,1000,897518,Shortest Augmenting Path,523812,12087300,895,893,0,2772
+data\flownetwork\custom\custom.n1000d90.00c100000mode3.max,1000,897518,Dinic,523812,1126186300,949,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c100000mode3.max,1000,897518,Capacity Scaling con SAP,523812,78621100,892,893,17,2777
+data\flownetwork\custom\custom.n1000d90.00c100000mode3.max,1000,897518,Recursive Dinic,523812,20139500,895,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode0.max,1000,832541,Capacity Scaling,4521,30730856400,1147,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode0.max,1000,832541,Shortest Augmenting Path,4521,30820700,1595,827,0,4909
+data\flownetwork\custom\custom.n1000d90.00c10mode0.max,1000,832541,Dinic,4521,3145693200,1609,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode0.max,1000,832541,Capacity Scaling con SAP,4521,67122400,1147,1129,4,4252
+data\flownetwork\custom\custom.n1000d90.00c10mode0.max,1000,832541,Recursive Dinic,4521,54788300,1595,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode1.max,1000,832151,Capacity Scaling con SAP,2253,53518500,926,923,3,3420
+data\flownetwork\custom\custom.n1000d90.00c10mode1.max,1000,832151,Recursive Dinic,2253,54074700,1487,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode1.max,1000,832151,Capacity Scaling,2253,24839730000,926,0,3,0
+data\flownetwork\custom\custom.n1000d90.00c10mode1.max,1000,832151,Shortest Augmenting Path,2253,30355900,1487,828,0,4594
+data\flownetwork\custom\custom.n1000d90.00c10mode1.max,1000,832151,Dinic,2253,3012160800,1480,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode2.max,1000,2985,Capacity Scaling con SAP,30,2011900,3,2,4,1001
+data\flownetwork\custom\custom.n1000d90.00c10mode2.max,1000,2985,Recursive Dinic,30,505500,3,0,2,0
+data\flownetwork\custom\custom.n1000d90.00c10mode2.max,1000,2985,Capacity Scaling,30,179041,0,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode2.max,1000,2985,Shortest Augmenting Path,0,3862,0,0,0,0
+data\flownetwork\custom\custom.n1000d90.00c10mode2.max,1000,2985,Dinic,30,2019100,3,0,2,0
+data\flownetwork\custom\custom.n1000d90.00c10mode3.max,1000,897694,Capacity Scaling,901,6061123000,892,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode3.max,1000,897694,Shortest Augmenting Path,901,12362200,892,894,0,2759
+data\flownetwork\custom\custom.n1000d90.00c10mode3.max,1000,897694,Dinic,901,1164720600,892,0,4,0
+data\flownetwork\custom\custom.n1000d90.00c10mode3.max,1000,897694,Capacity Scaling con SAP,901,12796900,892,893,4,2759
+data\flownetwork\custom\custom.n1000d90.00c10mode3.max,1000,897694,Recursive Dinic,901,20101000,892,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode0.max,50000,250000,Dinic,330211,182691100,32,0,8,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode0.max,50000,250000,Capacity Scaling con SAP,330211,40502400,11,2069,17,2242
+data\flownetwork\custom\custom.n50000d0.01c100000mode0.max,50000,250000,Recursive Dinic,330211,93910000,33,0,9,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode0.max,50000,250000,Capacity Scaling,330211,508686500,11,0,17,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode0.max,50000,250000,Shortest Augmenting Path,330211,6030200,33,1460,0,1760
+data\flownetwork\custom\custom.n50000d0.01c100000mode1.max,50000,250002,Recursive Dinic,100036,41121300,7,0,5,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode1.max,50000,250002,Capacity Scaling,100036,87101600,4,0,17,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode1.max,50000,250002,Shortest Augmenting Path,100036,6242400,7,23,0,73
+data\flownetwork\custom\custom.n50000d0.01c100000mode1.max,50000,250002,Dinic,100036,61121100,8,0,5,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode1.max,50000,250002,Capacity Scaling con SAP,100036,65543000,4,6,17,31
+data\flownetwork\custom\custom.n50000d0.01c100000mode2.max,50000,149991,Capacity Scaling,300000,56439100,3,0,17,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode2.max,50000,149991,Shortest Augmenting Path,300000,365090100,3,2,0,50003
+data\flownetwork\custom\custom.n50000d0.01c100000mode2.max,50000,149991,Dinic,300000,349223100,3,0,2,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode2.max,50000,149991,Capacity Scaling con SAP,300000,349661000,3,2,17,50003
+data\flownetwork\custom\custom.n50000d0.01c100000mode2.max,50000,149991,Recursive Dinic,300000,446035800,3,0,2,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode3.max,50000,249421,Capacity Scaling,201127,3201661600,198,0,17,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode3.max,50000,249421,Shortest Augmenting Path,201127,10207700,551,18912,0,26165
+data\flownetwork\custom\custom.n50000d0.01c100000mode3.max,50000,249421,Dinic,201127,995145200,538,0,13,0
+data\flownetwork\custom\custom.n50000d0.01c100000mode3.max,50000,249421,Capacity Scaling con SAP,201127,28524900,198,7951,17,10712
+data\flownetwork\custom\custom.n50000d0.01c100000mode3.max,50000,249421,Recursive Dinic,201127,106986700,551,0,12,0
+data\flownetwork\custom\custom.n50000d0.01c10mode0.max,50000,250000,Dinic,22,61387900,12,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c10mode0.max,50000,250000,Capacity Scaling con SAP,22,20641600,6,43,4,110
+data\flownetwork\custom\custom.n50000d0.01c10mode0.max,50000,250000,Recursive Dinic,22,36829800,13,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c10mode0.max,50000,250000,Capacity Scaling,22,116071100,6,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c10mode0.max,50000,250000,Shortest Augmenting Path,22,8199800,13,65,0,177
+data\flownetwork\custom\custom.n50000d0.01c10mode1.max,50000,250002,Recursive Dinic,18,40690000,9,0,5,0
+data\flownetwork\custom\custom.n50000d0.01c10mode1.max,50000,250002,Capacity Scaling,18,43600100,5,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c10mode1.max,50000,250002,Shortest Augmenting Path,18,6083300,9,17,0,80
+data\flownetwork\custom\custom.n50000d0.01c10mode1.max,50000,250002,Dinic,18,71580800,9,0,6,0
+data\flownetwork\custom\custom.n50000d0.01c10mode1.max,50000,250002,Capacity Scaling con SAP,18,20443200,5,4,4,42
+data\flownetwork\custom\custom.n50000d0.01c10mode2.max,50000,149991,Shortest Augmenting Path,30,355897600,3,2,0,50003
+data\flownetwork\custom\custom.n50000d0.01c10mode2.max,50000,149991,Dinic,30,349243000,3,0,2,0
+data\flownetwork\custom\custom.n50000d0.01c10mode2.max,50000,149991,Capacity Scaling con SAP,30,354079700,3,2,4,50003
+data\flownetwork\custom\custom.n50000d0.01c10mode2.max,50000,149991,Recursive Dinic,30,458742800,3,0,2,0
+data\flownetwork\custom\custom.n50000d0.01c10mode2.max,50000,149991,Capacity Scaling,30,31028700,3,0,4,0
+data\flownetwork\custom\custom.n50000d0.01c10mode3.max,50000,248765,Shortest Augmenting Path,22,55452200,13,294334,0,294439
+data\flownetwork\custom\custom.n50000d0.01c10mode3.max,50000,248765,Dinic,22,65526600,13,0,5,0
+data\flownetwork\custom\custom.n50000d0.01c10mode3.max,50000,248765,Capacity Scaling con SAP,22,59449800,13,294334,4,294439
+data\flownetwork\custom\custom.n50000d0.01c10mode3.max,50000,248765,Recursive Dinic,22,36748700,13,0,5,0
+data\flownetwork\custom\custom.n50000d0.01c10mode3.max,50000,248765,Capacity Scaling,22,202138000,13,0,4,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode0.max,50000,25000000,Capacity Scaling con SAP,21753609,6038537700,784,4605,17,7227
+data\flownetwork\custom\custom.n50000d1.00c100000mode0.max,50000,25000000,Recursive Dinic,21753609,3129727100,1184,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode0.max,50000,25000000,Capacity Scaling,21753609,815432532000,784,0,17,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode0.max,50000,25000000,Shortest Augmenting Path,21753609,519860500,1184,1846,0,5733
+data\flownetwork\custom\custom.n50000d1.00c100000mode0.max,50000,25000000,Dinic,21753609,191132852400,1185,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode1.max,50000,25000002,Shortest Augmenting Path,1993313,696159000,4518,20655,0,37832
+data\flownetwork\custom\custom.n50000d1.00c100000mode1.max,50000,25000002,Dinic,1993313,387604378900,4428,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode1.max,50000,25000002,Capacity Scaling con SAP,1993313,7382690800,607,3493,17,5681
+data\flownetwork\custom\custom.n50000d1.00c100000mode1.max,50000,25000002,Recursive Dinic,1993313,4389104000,4518,0,6,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode1.max,50000,25000002,Capacity Scaling,1993313,668892496900,607,0,17,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode2.max,50000,149991,Capacity Scaling,300000,48555600,3,0,17,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode2.max,50000,149991,Shortest Augmenting Path,300000,504750300,3,2,0,50003
+data\flownetwork\custom\custom.n50000d1.00c100000mode2.max,50000,149991,Dinic,300000,357908400,3,0,2,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode2.max,50000,149991,Capacity Scaling con SAP,300000,351615100,3,2,17,50003
+data\flownetwork\custom\custom.n50000d1.00c100000mode2.max,50000,149991,Recursive Dinic,300000,431001900,3,0,2,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode3.max,50000,25013197,Capacity Scaling,443583,167574184700,492,0,17,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode3.max,50000,25013197,Shortest Augmenting Path,443583,403247200,535,1327,0,2931
+data\flownetwork\custom\custom.n50000d1.00c100000mode3.max,50000,25013197,Dinic,443583,72230299500,720,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c100000mode3.max,50000,25013197,Capacity Scaling con SAP,443583,4815184600,492,2398,17,3894
+data\flownetwork\custom\custom.n50000d1.00c100000mode3.max,50000,25013197,Recursive Dinic,443583,884550200,535,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode0.max,50000,25000000,Recursive Dinic,2609,2742311700,1074,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode0.max,50000,25000000,Capacity Scaling,2609,735701657100,702,0,4,0
+data\flownetwork\custom\custom.n50000d1.00c10mode0.max,50000,25000000,Shortest Augmenting Path,2609,442004500,1074,1037,0,4559
+data\flownetwork\custom\custom.n50000d1.00c10mode0.max,50000,25000000,Dinic,2609,134832925800,1110,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode0.max,50000,25000000,Capacity Scaling con SAP,2609,1964406800,702,1793,4,4192
+data\flownetwork\custom\custom.n50000d1.00c10mode1.max,50000,25000002,Capacity Scaling,1280,611525572100,563,0,4,0
+data\flownetwork\custom\custom.n50000d1.00c10mode1.max,50000,25000002,Shortest Augmenting Path,1280,475790900,970,1744,0,4897
+data\flownetwork\custom\custom.n50000d1.00c10mode1.max,50000,25000002,Dinic,1280,115117316200,997,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode1.max,50000,25000002,Capacity Scaling con SAP,1280,1590576600,563,3135,4,5065
+data\flownetwork\custom\custom.n50000d1.00c10mode1.max,50000,25000002,Recursive Dinic,1280,3333497600,970,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode2.max,50000,149991,Recursive Dinic,30,577546500,3,0,2,0
+data\flownetwork\custom\custom.n50000d1.00c10mode2.max,50000,149991,Capacity Scaling,30,32351700,3,0,4,0
+data\flownetwork\custom\custom.n50000d1.00c10mode2.max,50000,149991,Shortest Augmenting Path,30,355770200,3,2,0,50003
+data\flownetwork\custom\custom.n50000d1.00c10mode2.max,50000,149991,Dinic,30,370779700,3,0,2,0
+data\flownetwork\custom\custom.n50000d1.00c10mode2.max,50000,149991,Capacity Scaling con SAP,30,351480000,3,2,4,50003
+data\flownetwork\custom\custom.n50000d1.00c10mode3.max,50000,24991832,Capacity Scaling,474,151707928600,457,0,4,0
+data\flownetwork\custom\custom.n50000d1.00c10mode3.max,50000,24991832,Shortest Augmenting Path,474,412361500,459,1166,0,2540
+data\flownetwork\custom\custom.n50000d1.00c10mode3.max,50000,24991832,Dinic,474,34552855200,458,0,5,0
+data\flownetwork\custom\custom.n50000d1.00c10mode3.max,50000,24991832,Capacity Scaling con SAP,474,1282504500,457,1186,4,2560
+data\flownetwork\custom\custom.n50000d1.00c10mode3.max,50000,24991832,Recursive Dinic,474,881633500,459,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode0.max,5000,125000,Capacity Scaling,1276003,99545300,47,0,17,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode0.max,5000,125000,Shortest Augmenting Path,1276003,2040100,84,125,0,481
+data\flownetwork\custom\custom.n5000d0.50c100000mode0.max,5000,125000,Dinic,1276003,28586300,83,0,6,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode0.max,5000,125000,Capacity Scaling con SAP,1276003,10201300,47,31,17,217
+data\flownetwork\custom\custom.n5000d0.50c100000mode0.max,5000,125000,Recursive Dinic,1276003,6133400,84,0,6,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode1.max,5000,125002,Dinic,209664,141356100,638,0,7,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode1.max,5000,125002,Capacity Scaling con SAP,209664,12711800,43,55,17,253
+data\flownetwork\custom\custom.n5000d0.50c100000mode1.max,5000,125002,Recursive Dinic,209664,5635400,600,0,7,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode1.max,5000,125002,Capacity Scaling,209664,90474300,43,0,17,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode1.max,5000,125002,Shortest Augmenting Path,0,591907,0,0,0,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode2.max,5000,14991,Recursive Dinic,300000,10920200,3,0,2,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode2.max,5000,14991,Capacity Scaling,300000,6220200,3,0,17,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode2.max,5000,14991,Shortest Augmenting Path,300000,7151700,3,2,0,5003
+data\flownetwork\custom\custom.n5000d0.50c100000mode2.max,5000,14991,Dinic,300000,8180800,3,0,2,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode2.max,5000,14991,Capacity Scaling con SAP,300000,7191800,3,2,17,5003
+data\flownetwork\custom\custom.n5000d0.50c100000mode3.max,5000,125351,Capacity Scaling,212205,82817700,31,0,17,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode3.max,5000,125351,Shortest Augmenting Path,0,14700,0,0,0,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode3.max,5000,125351,Dinic,212205,36603600,79,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c100000mode3.max,5000,125351,Capacity Scaling con SAP,212205,6082500,31,170,17,323
+data\flownetwork\custom\custom.n5000d0.50c100000mode3.max,5000,125351,Recursive Dinic,212205,4083100,48,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode0.max,5000,125000,Recursive Dinic,110,5775400,52,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode0.max,5000,125000,Capacity Scaling,110,70104000,29,0,4,0
+data\flownetwork\custom\custom.n5000d0.50c10mode0.max,5000,125000,Shortest Augmenting Path,110,2091000,52,283,0,501
+data\flownetwork\custom\custom.n5000d0.50c10mode0.max,5000,125000,Dinic,110,24408500,50,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode0.max,5000,125000,Capacity Scaling con SAP,110,4103800,29,640,4,775
+data\flownetwork\custom\custom.n5000d0.50c10mode1.max,5000,125002,Capacity Scaling,37,26607700,13,0,4,0
+data\flownetwork\custom\custom.n5000d0.50c10mode1.max,5000,125002,Shortest Augmenting Path,0,572874,0,0,0,0
+data\flownetwork\custom\custom.n5000d0.50c10mode1.max,5000,125002,Dinic,37,10244100,21,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode1.max,5000,125002,Capacity Scaling con SAP,37,2058100,13,5,4,53
+data\flownetwork\custom\custom.n5000d0.50c10mode1.max,5000,125002,Recursive Dinic,37,4121300,22,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode2.max,5000,14991,Shortest Augmenting Path,30,7187400,3,2,0,5003
+data\flownetwork\custom\custom.n5000d0.50c10mode2.max,5000,14991,Dinic,30,6175800,3,0,2,0
+data\flownetwork\custom\custom.n5000d0.50c10mode2.max,5000,14991,Capacity Scaling con SAP,30,7289600,3,2,4,5003
+data\flownetwork\custom\custom.n5000d0.50c10mode2.max,5000,14991,Recursive Dinic,30,8185300,3,0,2,0
+data\flownetwork\custom\custom.n5000d0.50c10mode2.max,5000,14991,Capacity Scaling,30,3581800,3,0,4,0
+data\flownetwork\custom\custom.n5000d0.50c10mode3.max,5000,124908,Capacity Scaling,44,50830100,27,0,4,0
+data\flownetwork\custom\custom.n5000d0.50c10mode3.max,5000,124908,Shortest Augmenting Path,0,14784,0,0,0,0
+data\flownetwork\custom\custom.n5000d0.50c10mode3.max,5000,124908,Dinic,44,14156000,28,0,5,0
+data\flownetwork\custom\custom.n5000d0.50c10mode3.max,5000,124908,Capacity Scaling con SAP,44,212951,0,0,4,0
+data\flownetwork\custom\custom.n5000d0.50c10mode3.max,5000,124908,Recursive Dinic,44,4048000,30,0,5,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode0.max,5000,12500000,Shortest Augmenting Path,123225549,661557300,5963,2445,0,19080
+data\flownetwork\custom\custom.n5000d50.00c100000mode0.max,5000,12500000,Dinic,123225549,164602212700,5972,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode0.max,5000,12500000,Capacity Scaling con SAP,123225549,3253083600,4711,2946,17,16496
+data\flownetwork\custom\custom.n5000d50.00c100000mode0.max,5000,12500000,Recursive Dinic,123225549,986358900,5963,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode0.max,5000,12500000,Capacity Scaling,123225549,2165767364100,4711,0,17,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode1.max,5000,12500001,Capacity Scaling con SAP,9836533,2852384300,2818,453,17,8500
+data\flownetwork\custom\custom.n5000d50.00c100000mode1.max,5000,12500001,Recursive Dinic,9836533,997661600,10400,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode1.max,5000,12500001,Capacity Scaling,9836533,1296648238900,2818,0,17,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode1.max,5000,12500001,Shortest Augmenting Path,9836533,1003232700,10400,2355,0,32362
+data\flownetwork\custom\custom.n5000d50.00c100000mode1.max,5000,12500001,Dinic,9836533,182263658500,10764,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode2.max,5000,14991,Capacity Scaling,300000,5078000,3,0,17,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode2.max,5000,14991,Shortest Augmenting Path,300000,4744300,3,2,0,5003
+data\flownetwork\custom\custom.n5000d50.00c100000mode2.max,5000,14991,Dinic,300000,6290700,3,0,2,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode2.max,5000,14991,Capacity Scaling con SAP,300000,5139400,3,2,17,5003
+data\flownetwork\custom\custom.n5000d50.00c100000mode2.max,5000,14991,Recursive Dinic,300000,46794900,3,0,2,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode3.max,5000,12495304,Recursive Dinic,1422406,357727600,2572,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode3.max,5000,12495304,Capacity Scaling,1422406,270795297500,2563,0,17,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode3.max,5000,12495304,Shortest Augmenting Path,1422406,164702200,2572,2553,0,8979
+data\flownetwork\custom\custom.n5000d50.00c100000mode3.max,5000,12495304,Dinic,1422406,65065125200,3470,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c100000mode3.max,5000,12495304,Capacity Scaling con SAP,1422406,1756036500,2563,2606,17,9025
+data\flownetwork\custom\custom.n5000d50.00c10mode0.max,5000,12500000,Capacity Scaling con SAP,13491,1195023500,3446,3494,4,13278
+data\flownetwork\custom\custom.n5000d50.00c10mode0.max,5000,12500000,Recursive Dinic,13491,1139615500,5067,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode0.max,5000,12500000,Capacity Scaling,13491,1590703863400,3446,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode0.max,5000,12500000,Shortest Augmenting Path,13491,679178200,5067,2495,0,16472
+data\flownetwork\custom\custom.n5000d50.00c10mode0.max,5000,12500000,Dinic,13491,165792613500,5121,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode1.max,5000,12500001,Shortest Augmenting Path,6610,573711800,4528,2336,0,14625
+data\flownetwork\custom\custom.n5000d50.00c10mode1.max,5000,12500001,Dinic,6610,170369800300,4522,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode1.max,5000,12500001,Capacity Scaling con SAP,6610,903160400,2785,1807,4,9551
+data\flownetwork\custom\custom.n5000d50.00c10mode1.max,5000,12500001,Recursive Dinic,6610,983180500,4528,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode1.max,5000,12500001,Capacity Scaling,6610,1280998400600,2785,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode2.max,5000,14991,Shortest Augmenting Path,30,4969200,3,2,0,5003
+data\flownetwork\custom\custom.n5000d50.00c10mode2.max,5000,14991,Dinic,30,4840600,3,0,2,0
+data\flownetwork\custom\custom.n5000d50.00c10mode2.max,5000,14991,Capacity Scaling con SAP,30,5198600,3,2,4,5003
+data\flownetwork\custom\custom.n5000d50.00c10mode2.max,5000,14991,Recursive Dinic,30,5307700,3,0,2,0
+data\flownetwork\custom\custom.n5000d50.00c10mode2.max,5000,14991,Capacity Scaling,30,3119700,3,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode3.max,5000,12493985,Capacity Scaling,2462,259233253800,2459,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode3.max,5000,12493985,Shortest Augmenting Path,2462,168100400,2459,2463,0,8608
+data\flownetwork\custom\custom.n5000d50.00c10mode3.max,5000,12493985,Dinic,2462,53560801100,2459,0,4,0
+data\flownetwork\custom\custom.n5000d50.00c10mode3.max,5000,12493985,Capacity Scaling con SAP,2462,196532900,2459,2462,4,8608
+data\flownetwork\custom\custom.n5000d50.00c10mode3.max,5000,12493985,Recursive Dinic,2462,351360300,2459,0,4,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba0.max,110594,506546,Capacity Scaling,34664,145238675600,7153,0,10,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba0.max,110594,506546,Shortest Augmenting Path,34663,1340514200,9352,10723729,0,10811883
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba0.max,110594,506546,Dinic,34664,29019821100,9335,0,99,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba0.max,110594,506546,Capacity Scaling con SAP,34664,2992706000,7153,35302989,10,35366578
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba0.max,110594,506546,Recursive Dinic,34663,876281800,9352,0,101,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba15.max,110594,512201,Dinic,33337,22523379700,7672,0,15,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba15.max,110594,512201,Capacity Scaling con SAP,33324,1044649200,5898,6195779,10,6218152
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba15.max,110594,512201,Recursive Dinic,33340,132588800,7680,0,17,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba15.max,110594,512201,Capacity Scaling,33324,123928139600,5898,0,10,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba15.max,110594,512201,Shortest Augmenting Path,33340,820522000,7680,2935882,0,2965768
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Capacity Scaling,41019,165477686300,7887,0,10,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Shortest Augmenting Path,41018,1009717300,10712,4712738,0,4763498
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Dinic,41048,32536305800,10815,0,44,0
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Capacity Scaling con SAP,41019,1502361100,7887,11853761,10,11888748
+data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Recursive Dinic,41018,428582600,10712,0,44,0

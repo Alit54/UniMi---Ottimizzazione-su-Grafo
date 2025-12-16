@@ -1,13 +1,17 @@
 package main
 
 import (
+	"OttimizzazioneSuGrafo/internal/benchmark"
 	"OttimizzazioneSuGrafo/internal/flownetwork"
 	"fmt"
 )
 
 func main() {
-	//benchmark.Run()
-	generateCustomBenchmarkProblems()
+	//generateCustomBenchmarkProblems()
+	benchmark.Run("data/flownetwork/custom", "export/benchmark_results.csv")
+	benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results.csv")
+	benchmark.Run("data/flownetwork/KZ2-venus", "export/benchmark_results.csv")
+	benchmark.Run("data/flownetwork/babyface", "export/benchmark_results.csv")
 }
 
 func generateCustomBenchmarkProblems() {
@@ -51,7 +55,7 @@ func generateCustomBenchmarkProblems() {
 }
 
 func generateProblem(nNodes int, density float64, maxCap int, source int, sink int) {
-	fn := flownetwork.NewFlowNetwork(nNodes, source, sink)
-	fn.GenerateRandomArcs(density, 1, maxCap)
-	fn.ToDIMACS(fmt.Sprintf("custom.n%dd%.2fc%d", nNodes, density*100, maxCap), "data/flownetwork/custom", fmt.Sprintf("Grafo generato casualmente dalla funzione GenerateRandomArcs() con %d nodi e una densità di %.2f. La massima capacità degli archi è %d", nNodes, density, maxCap))
+	for i := 0; i < 4; i++ {
+		flownetwork.GenerateDIMACS(fmt.Sprintf("data/flownetwork/custom/custom.n%dd%.2fc%dmode%d.max", nNodes, density*100, maxCap, i), nNodes, density, maxCap, source, sink, i)
+	}
 }

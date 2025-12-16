@@ -13,14 +13,13 @@ func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlo
 	sap := ShortestAugmentingPath{}
 	for delta >= 1 {
 		stats.Phases++
-		tempFlow, tempStats := sap.RunWithThreshold(fn, delta, saveSteps)
-		maxFlow += tempFlow
+		_, tempStats := sap.RunWithThreshold(fn, delta, saveSteps)
 		stats.Advances += tempStats.Advances
 		stats.Retreats += tempStats.Retreats
 		stats.Augments += tempStats.Augments
 		delta /= 2
 	}
-	return
+	return fn.GetMaxFlowValue(), stats
 }
 
 func (csSap ScalingSAP) initializeDelta(maxCapacity int) int {
