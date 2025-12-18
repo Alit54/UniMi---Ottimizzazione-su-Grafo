@@ -9,6 +9,9 @@
 \usepackage[italian]{babel} % Italiano
 \usepackage{parskip} % A morte l'indent
 \usepackage{hyperref} % Linksss
+\usepackage[backend=biber, style=numeric]{biblatex}
+\addbibresource{bibliography.bib} % Va nel preambolo
+
 
 
 \author{Simone Alessandro Casciaro}
@@ -26,11 +29,20 @@
     Il nodo da cui parte il flusso viene chiamato \textit{source}, o \textit{sorgente} in italiano, mentre quello che riceve il flusso viene chiamato \textit{sink}, o \textit{pozzo} in italiano.
 
     \chapter{Obiettivi}\label{ch:obiettivi}
+    Il progetto si pone come obiettivo principale l'analisi comparativa approfondita di diverse strategie risolutive per il problema del Massimo Flusso.
+    Lo studio mira a valutare l'efficienza e la scalabilità di cinque distinti algoritmi, presentati nel dettaglio nel Capitolo~\ref{ch:algoritmi}, mettendone in luce i punti di forza e le criticità attraverso un approccio sperimentale.
+
+    Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio babyset, BVZ-tsukuba e K2Z-venus.
+
+    Sono anche stati generati dei grafi attraverso una funzione di generazione casuale che, presi in input il numero di nodi $n$ e la densità $d$, genera un grafo con $n$ nodi e $m_{\max}\cdot d$ archi, dove $m_{\max} = n\cdot(n-1)$.
+
 
     \chapter{Algoritmi}\label{ch:algoritmi}
 
     \chapter{Risultati}\label{ch:risultati}
 
     \chapter{Conclusioni}\label{ch:conclusioni}
+
+    \printbibliography
 
 \end{document}
