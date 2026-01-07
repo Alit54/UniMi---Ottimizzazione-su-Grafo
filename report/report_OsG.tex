@@ -4,19 +4,26 @@
 % Preamble
 \documentclass[11pt]{report}
 
-% Packages
-\usepackage{amsmath}
-\usepackage[italian]{babel} % Italiano
-\usepackage{parskip} % A morte l'indent
-\usepackage{hyperref} % Linksss
-\usepackage[backend=biber, style=numeric]{biblatex}
-\addbibresource{bibliography.bib} % Va nel preambolo
-
-
-
 \author{Simone Alessandro Casciaro}
 \date{Dicembre 2025}
 \title{Progetto di Ottimizzazione su Grafo}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{parskip} % A morte l'indent
+\usepackage{hyperref} % Linksss
+\usepackage[backend=biber, style=numeric]{biblatex}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage[italian]{babel} % Italiano
+\usepackage{amsfonts}
+\usepackage{optidef} % Stile Ricerca Operativa
+\addbibresource{bibliography.bib}
+
+\SetAlgorithmName{Algoritmo} % Italiano per algoritmi
+
+
+
+\newcommand{\set}[1]{\mathcal{#1}}
 
 % Document
 \begin{document}
@@ -28,16 +35,306 @@
     Il problema consiste nel trovare il massimo flusso che può essere mandato da un nodo a un altro di un grafo.
     Il nodo da cui parte il flusso viene chiamato \textit{source}, o \textit{sorgente} in italiano, mentre quello che riceve il flusso viene chiamato \textit{sink}, o \textit{pozzo} in italiano.
 
+    Formalmente, sia $G=(\set N,\set A)$ un grafo orientato in cui $\set N$ è l'insieme dei nodi ed $\set A$ è l'insieme degli archi.
+    Ad ogni coppia di nodi $(u,v)\in \set N\times \set N$, viene associata una capacità non negativa $c(u,v)\ge0$.
+    Se $(u,v)\notin\set A$, allora $c(u,v)=0$.
+
+    Viene inoltre definito il flusso, una funzione $f:\set N\times \set N\to\mathbb{R}$ tale per cui a ogni arco viene associato un flusso non negativo e sempre inferiore alla capacità dell'arco:
+    $$0\le f(u,v)\le c(u,v)\quad\forall (u,v)\in \set A$$
+
+    Dato un nodo sorgente $s$ e un nodo pozzo $t$, l'obiettivo del problema è massimizzare il flusso uscente da $s$ ed entrante in $t$:
+    $$f^* = \sum_{v\in \set N}\left(f(s,v)-f(v,s)\right)$$
+
+    Il problema può essere espresso anche come un problema di \textit{Programmazione Lineare} (PL) con una funzione obiettivo e dei vincoli di conservazione del flusso, definendo le variabili $f_{ij}$ per indicare il flusso $f(i,j)$ e le variabili $c_{ij}$ per indicare la capacità $c(i,j)$:
+
+    \begin{maxi*}
+    {}
+    {z}
+    {}
+    {}
+        \addConstraint{\sum_{(i\in\set N:(i,j)\in \set A)}f_{ij}-\sum_{(i\in\set N:(j,i)\in \set A)}f_{ij}}{=\begin{cases}
+                                                                                                                 -z&\text{se }j=s\\
+                                                                                                                 0&\forall j\ne s,t\\
+                                                                                                                 z&\text{se }j=t
+        \end{cases}}
+        \addConstraint{0\le f_{ij}\le c_{ij}\qquad\qquad\qquad\qquad}{\forall(i,j)\in\set A}
+    \end{maxi*}
+
+    Essendo un problema di programmazione lineare, esiste anche un problema duale, denominato problema del minimo taglio (Min Cut).
+    Si definiscono le variabili duali:
+    \begin{itemize}
+        \item $y_i$: le variabili associate ai vincoli di conservazione del flusso nel problema primale;
+        \item $\omega_{ij}$: le variabili associate ai vincoli di capacità degli archi.
+    \end{itemize}
+    La sua formulazione matematica è la seguente:
+    \begin{mini*}
+    {}
+    {w=\sum_{(i,j)\in\set A}c_{ij}\omega_{ij}}
+    {}
+    {}
+        \addConstraint{y_j-y_i+\omega_{ij}}{\ge0}{\qquad\forall (i,j)\in\set A}
+        \addConstraint{y_s-y_t}{\ge1}{}
+        \addConstraint{y_i}{\text{ libere}}{\qquad\forall i\in\set N}
+        \addConstraint{\omega_{ij}}{\ge0}{\qquad\forall(i,j)\in\set A}
+    \end{mini*}
+
+    Grazie al teorema della dualità in forma forte, si ha un'importante risultato che collega il problema primale (Max Flow) al problema duale (Min Cut):
+    $$\exists x^*,c^*:\quad z(x^*)=w(c^*).$$
+    Dunque, risolvere all'ottimo il problema del massimo flusso o quello del minimo taglio è equivalente.
+
     \chapter{Obiettivi}\label{ch:obiettivi}
     Il progetto si pone come obiettivo principale l'analisi comparativa approfondita di diverse strategie risolutive per il problema del Massimo Flusso.
     Lo studio mira a valutare l'efficienza e la scalabilità di cinque distinti algoritmi, presentati nel dettaglio nel Capitolo~\ref{ch:algoritmi}, mettendone in luce i punti di forza e le criticità attraverso un approccio sperimentale.
 
     Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio babyset, BVZ-tsukuba e K2Z-venus.
+    Questi dataset rappresentano istanze reali derivanti da problemi di segmentazione di immagini, nelle quali ogni pixel è modellato come un nodo del grafo.
 
-    Sono anche stati generati dei grafi attraverso una funzione di generazione casuale che, presi in input il numero di nodi $n$ e la densità $d$, genera un grafo con $n$ nodi e $m_{\max}\cdot d$ archi, dove $m_{\max} = n\cdot(n-1)$.
+    Sono anche stati generati dei grafi attraverso una funzione di generazione casuale che, presi in input il numero di nodi $n$ e la densità $d$, genera un grafo con $n$ nodi e $m_{\max}\cdot d$ archi, dove $m_{\max} = n\cdot(n-1)$ in quanto $G$ è definito come un grafo diretto.
 
 
     \chapter{Algoritmi}\label{ch:algoritmi}
+    Gli algoritmi scelti per l'analisi sono i seguenti:
+    \begin{itemize}
+        \item Capacity Scaling;
+        \item Shortest Augmenting Path;
+        \item Capacity Scaling con Shortest Augmenting Path;
+        \item Dinic (versione iterativa);
+        \item Dinic (versione ricorsiva).
+    \end{itemize}
+
+    \section{Capacity Scaling}\label{sec:cs}
+    L'algoritmo Capacity Scaling esamina il grafo $G$ partendo dagli archi $(u,v)\in E$ tali per cui $c(u,v)-f(u,v)\ge\Delta$, dove $\Delta$ è un valore progressivamente decrescente che viene inizializzato alla più grande potenza di $2$ che sia minore della capacità massima tra gli archi.
+    In questo modo, l'algoritmo cerca di trovare i percorsi dove la capacità residua degli archi è la più alta possibile, lasciando per ultimi quelli che influiscono in maniera minore sul valore del flusso massimo.
+
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \SetKwFunction{FCapScaling}{CapacityScaling}
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+
+        \Input{Un grafo di flusso $G = (V, E)$, una capacità $c(u, v) \geq 0$, una sorgente $s$, un pozzo $t$}
+        \Output{Il valore del Flusso Massimo $f_{max}$}
+
+        \BlankLine
+        $C_{max} \leftarrow 0$\;
+        \ForEach{$(u, v) \in E$}{
+            \If{$c(u, v) > C_{max}$}{
+                $C_{max} \leftarrow c(u, v)$\;
+            }
+        }
+        $\Delta \leftarrow 2^{\lfloor \log_2(C_{max}) \rfloor}$
+
+        \BlankLine
+        \While{$\Delta \geq 1$}{
+            \While{True}{
+                $P \leftarrow \text{BFS}(G, s, t)$ tale che $\forall (u,v) \in P, \, c(u,v) - f(u,v) \geq \Delta$\;
+
+                \If{$P$ non esiste}{
+                    \textbf{break} \tcp*{Nessun cammino valido per l'attuale Delta}
+                }
+
+                $\delta \leftarrow \infty$\;
+                \ForEach{$(u, v) \in P$}{
+                    $r \leftarrow c(u, v) - f(u, v)$\;
+                    \If{$r < \delta$}{
+                        $\delta \leftarrow r$\;
+                    }
+                }
+
+                \ForEach{$(u, v) \in P$}{
+                    $f(u, v) \leftarrow f(u, v) + \delta$\;
+                }
+            }
+            $\Delta \leftarrow \Delta / 2$
+        }
+
+        $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
+        \Return{$f_{max}$}\;
+
+        \caption{Capacity Scaling}
+        \label{alg:capacity_scaling}
+    \end{algorithm}
+
+    \section{Shortest Augmenting Path}\label{sec:sap}
+    Lo Shortest Augmenting Path è un algoritmo che esamina il grafo $G$ partendo dai percorsi più brevi possibile, ovverosia i percorsi con il minor numero di archi attraversati per arrivare da \textit{source} a \textit{sink}.
+
+    In questo modo, l'algoritmo dà priorità ai percorsi che sono più veloci per arrivare al nodo pozzo, effettuando per ultimi le augmentazioni che riguardano percorsi con un numero elevato di archi da percorrere.
+
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \SetKwFunction{FISAP}{ShortestAugmentingPath}
+        \SetKwFunction{FRevBFS}{ReverseBFS}
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+
+        \Input{Grafo $G=(V,E)$, capacità $c$, sorgente $s$, pozzo $t$}
+        \Output{Flusso Massimo $f_{max}$}
+
+        \BlankLine
+        $d \leftarrow \FRevBFS(G, t, \Delta)$ \;
+        $num[i] \leftarrow$ numero di nodi $n$ con distanza $d[n]=i\quad\forall i\in(0,|V|)$\;
+        $currentArc[u] \leftarrow 0, \forall u \in V$\;
+        $u \leftarrow s$\;
+
+        \BlankLine
+        \While{$d(s) < |V|$}{
+            $admissible \leftarrow \text{False}$\;
+
+            \For{$i \leftarrow currentArc[u]$ \KwTo $|Adj(u)| - 1$}{
+                $(u, v) \leftarrow Adj(u)[i]$\;
+                $res \leftarrow c(u, v) - f(u, v)$\;
+                \If{$res > 0$ \textbf{and} $d(u) = d(v) + 1$}{
+                    $admissible \leftarrow \text{True}$\;
+                    $currentArc[u] \leftarrow i$\;
+                    $pred[v] \leftarrow u$\;
+                    $u \leftarrow v$ \tcp*{ADVANCE}
+
+                    \If{$u = t$}{
+                        \tcp{AUGMENT}
+                        $path \leftarrow$ ricostruisci cammino usando $pred$\;
+                        $\delta \leftarrow \min_{(x,y) \in path} (c(x,y) - f(x,y))$\;
+                        \ForEach{$(x,y) \in path$}{
+                            $f(x,y) \leftarrow f(x,y) + \delta$\;
+                        }
+                        $u \leftarrow s$\;
+                    }
+                    \textbf{break}\;
+                }
+            }
+
+            \If{\textbf{not} $admissible$}{
+                \tcp{RETREAT}
+                $num[d(u)] \leftarrow num[d(u)] - 1$\;
+                \If{$num[d(u)] = 0$}{
+                    \textbf{break}
+                }
+
+                $min\_d \leftarrow |V|$\;
+                \ForEach{$(u, v) \in Adj(u)$}{
+                     $r \leftarrow c(u, v) - f(u, v)$\;
+                     \If{$r > 0$ \textbf{and} $d(v) < min\_d$}{
+                        $min\_d \leftarrow d(v)$\;
+                     }
+                }
+                $d(u) \leftarrow min\_d + 1$\;
+                $num[d(u)] \leftarrow num[d(u)] + 1$\;
+                $currentArc[u] \leftarrow 0$\;
+
+                \If{$u \neq s$}{
+                    $u \leftarrow pred[u]$\;
+                }
+            }
+        }
+
+        \Return{$\sum_{v \in V} f(s, v)$}\;
+
+        \caption{Shortest Augmenting Path}
+    \label{alg:sap}
+    \end{algorithm}
+
+    \section{Capacity Scaling con Shortest Augmenting Path}\label{sec:cs_sap}
+    Capacity Scaling con Shortest Augmenting Path è un algoritmo che combina i due presentati nella sezione~\ref{sec:cs} e~\ref{sec:sap}.
+    L'idea alla base dell'algoritmo è di utilizzare Shortest Augmenting Path come una \textit{sub-routine}, limitando la ricerca dei percorsi a quelli che hanno archi con una capacità superiore o uguale a $\Delta$.
+    La logica del calcolo del $\Delta$ è uguale a quella di Capacity Scaling.
+    L'obiettivo è dunque focalizzarsi su percorsi che hanno pochi archi e con capacità alte, combinando le tecniche dei due algoritmi.
+
+    \begin{algorithm}[H]
+        \DontPrintSemicolon
+        \SetKwFunction{FScalingSAP}{ScalingSAP}
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+
+        \Input{Un grafo di flusso $G = (V, E)$, capacità $c(u, v) \geq 0$, sorgente $s$, pozzo $t$}
+        \Output{Il valore del Flusso Massimo $f_{max}$}
+
+        \BlankLine
+        $C_{max} \leftarrow 0$\;
+        \ForEach{$(u, v) \in E$}{
+            \If{$c(u, v) > C_{max}$}{
+                $C_{max} \leftarrow c(u, v)$\;
+            }
+        }
+        $\Delta \leftarrow 2^{\lfloor \log_2(C_{max}) \rfloor}$
+
+        \BlankLine
+        \While{$\Delta \geq 1$}{
+            \text{ShortestAugmentingPath}(G, s, t, \Delta)\;\\
+            $\Delta \leftarrow \Delta / 2$\;
+        }
+
+        $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
+        \Return{$f_{max}$}\;
+
+        \caption{Scaling Shortest Augmenting Path}
+        \label{alg:scaling_sap}
+    \end{algorithm}
+
+    \section{Dinic}\label{sec:Dinic}
+    L'algoritmo di Dinic è un algoritmo fortemente polinomiale inventato nel 1970 per il problema del massimo flusso.
+    L'idea alla base dell'algoritmo è etichettare tutti i nodi con la distanza che hanno dal nodo sink, costruendo il \textit{grafo dei livelli} attraverso una BFS.
+    Una volta costruito il grafo dei livelli, si utilizza la DFS per cercare un cammino augmentante.
+    Quando la DFS non trova un percorso augmentante, viene interrotto il ciclo interno e generato un nuovo grafo dei livelli attraverso la BFS.
+
+    In questo progetto vengono presentate due versioni di Dinic, che differiscono nel modo in cui la DFS viene implementata:
+    \begin{itemize}
+        \item versione iterativa;
+        \item versione ricorsiva.
+    \end{itemize}
+
+    In entrambi i casi, una volta costruito il grafo dei livelli e assegnato un livello ad ogni nodo del grafo, la DFS ricerca il percorso augmentante usando come archi ammissibili solo gli archi $(u,v)\in E$ tali per cui:
+    $$level[v]=level[u]+1$$
+    e che hanno ancora flusso disponibile (cioè tali per cui $f(u,v)<c(u,v)$).
+
+    \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{FDinic}{DinicMaxFlow}
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+
+    \Input{Grafo di flusso $G = (V, E)$, capacità $c$, sorgente $s$, pozzo $t$}
+    \Output{Il valore del Flusso Massimo $f_{max}$}
+
+    \BlankLine
+
+    \While{True}{
+        $level$ \leftarrow BFS(G,s,t)
+
+        \If{$level[t] = -1$}{
+            \textbf{break} \tcp*{Il pozzo non è raggiungibile}
+        }
+        \BlankLine
+        \While{True}{
+            $path$ \leftarrow DFS(G, level, s, t)\;
+            \BlankLine
+            \If{path\text{ is null}} {
+                \textbf{break} \tcp*{Nessun cammino in questo Level Graph}
+            }
+
+            $\delta \leftarrow \min \{ c(u,v) - f(u,v) \mid (u,v) \in path \}$\;
+
+            \ForEach{$(u, v) \in path$}{
+                $f(u, v) \leftarrow f(u, v) + \delta$\;
+            }
+        }
+    }
+
+    $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
+    \Return{$f_{max}$}\;
+
+    \caption{Dinic}
+    \label{alg:dinic}
+    \end{algorithm}
+
+    \subsection{Dinic iterativo}\label{subsec:iterativo}
+    Nella versione iterativa della DFS, viene utilizzata una pila per tenere traccia dei nodi da espandere durante la ricerca del cammino augmentante.
+
+    Una volta che la DFS ha trovato un percorso augmentante, il flusso viene spinto su tale percorso.
+
+    \subsection{Dinic ricorsivo}\label{subsec:ricorsivo}
+    Nella versione ricorsiva della DFS, viene usato in maniera naturale lo \textit{stack} del sistema operativo.
+    Questa è la versione più usata in letteratura, in quanto la ricorsione risulta più efficiente rispetto all'utilizzo di un array come una pila e il codice è più semplice.
+
+    L'utilizzo della ricorsione potrebbe, tuttavia, portare a uno \textit{stack overflow} nel caso di grafi grandi e complessi.
 
     \chapter{Risultati}\label{ch:risultati}
 
