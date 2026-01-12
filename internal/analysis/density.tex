@@ -1,0 +1,54 @@
+
+\begin{tikzpicture}
+    \begin{axis}[
+        title={{Analisi Impatto Densità (N fissato a {best_n})}},
+        width=0.95\textwidth,
+        height=0.6\textwidth,
+        xlabel={{Densità del Grafo (\%) }},
+        ylabel={{Tempo di Esecuzione (ms)}},
+        grid=both,
+        grid style={{line width=.1pt, draw=gray!20}},
+        major grid style={{line width=.2pt,draw=gray!50}},
+        legend pos=north west,
+        legend cell align={{left}},
+        cycle list name=color list,
+        xmin=0
+    ]
+    %% Algoritmo: Cap. Scaling
+    \addplot+[mark=*, mark size=1.5pt, thick] coordinates {
+        (0.5, 5.9996)
+        (25.0, 780.6967)
+        (90.0, 16256.9486)
+    };
+    \addlegendentry{Cap. Scaling}
+    %% Algoritmo: SAP
+    \addplot+[mark=*, mark size=1.5pt, thick] coordinates {
+        (0.5, 0.0794)
+        (25.0, 2.1755)
+        (90.0, 19.9330)
+    };
+    \addlegendentry{SAP}
+    %% Algoritmo: Dinic
+    \addplot+[mark=*, mark size=1.5pt, thick] coordinates {
+        (0.5, 1.6459)
+        (25.0, 130.6430)
+        (90.0, 1883.8771)
+    };
+    \addlegendentry{Dinic}
+    %% Algoritmo: Cap. Scaling con SAP
+    \addplot+[mark=*, mark size=1.5pt, thick] coordinates {
+        (0.5, 0.6112)
+        (25.0, 9.2965)
+        (90.0, 67.3710)
+    };
+    \addlegendentry{Cap. Scaling con SAP}
+    %% Algoritmo: Recursive Dinic
+    \addplot+[mark=*, mark size=1.5pt, thick] coordinates {
+        (0.5, 0.5095)
+        (25.0, 5.9016)
+        (90.0, 30.7117)
+    };
+    \addlegendentry{Recursive Dinic}
+
+    \end{axis}
+\end{tikzpicture}

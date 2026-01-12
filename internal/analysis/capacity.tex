@@ -1,0 +1,23 @@
+
+\begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        title={Impatto della Capacità sugli Algoritmi ($N=1000, D=0.5\%$)},
+        width=0.95\textwidth,
+        height=0.6\textwidth,
+        symbolic x coords={CS,CS + SAP,Dinic,Recursive Dinic,SAP},
+        xtick=data,
+        ylabel={Tempo di Esecuzione (ms)},
+        legend style={at={(0.5,-0.15)}, anchor=north},
+        ymajorgrids=true,
+        %nodes near coords,
+        %nodes near coords style={font=\footnotesize},
+        ymin=0
+    ]
+    \addplot coordinates {(CS, 0.86) (CS + SAP, 0.45) (Dinic, 0.76) (Recursive Dinic, 0.89) (SAP, 0.14) };
+    \addlegendentry{Capacità $C=10$}
+    \addplot coordinates {(CS, 11.14) (CS + SAP, 0.78) (Dinic, 2.53) (Recursive Dinic, 0.13) (SAP, 0.02) };
+    \addlegendentry{Capacità $C=100.000$}
+
+    \end{axis}
+\end{tikzpicture}

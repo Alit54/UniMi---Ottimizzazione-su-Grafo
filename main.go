@@ -1,17 +1,17 @@
 package main
 
 import (
-	"OttimizzazioneSuGrafo/internal/benchmark"
 	"OttimizzazioneSuGrafo/internal/flownetwork"
 	"fmt"
 )
 
 func main() {
 	//generateCustomBenchmarkProblems()
-	benchmark.Run("data/flownetwork/custom", "export/benchmark_results.csv")
-	benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results.csv")
-	benchmark.Run("data/flownetwork/KZ2-venus", "export/benchmark_results.csv")
-	benchmark.Run("data/flownetwork/babyface", "export/benchmark_results.csv")
+	generateCapacityProblem(1000, 0.5, 100000, 0, 1, 10)
+	//benchmark.Run("data/flownetwork/custom", "export/benchmark_results.csv")
+	//benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results.csv")
+	//benchmark.Run("data/flownetwork/KZ2-venus", "export/benchmark_results.csv")
+	//benchmark.Run("data/flownetwork/babyface", "export/benchmark_results.csv")
 }
 
 func generateCustomBenchmarkProblems() {
@@ -58,4 +58,26 @@ func generateProblem(nNodes int, density float64, maxCap int, source int, sink i
 	for i := 0; i < 4; i++ {
 		flownetwork.GenerateDIMACS(fmt.Sprintf("data/flownetwork/custom/custom.n%dd%.2fc%dmode%d.max", nNodes, density*100, maxCap, i), nNodes, density, maxCap, source, sink, i)
 	}
+}
+
+func generateCapacityProblem(numNodes int, density float64, maxCap int, source int, sink int, lowFactor int) {
+	fnHigh := flownetwork.NewFlowNetwork(numNodes, source, sink)
+	fnHigh.GenerateRandomArcs(density, 1, maxCap)
+	fnHigh.ToDIMACS("graph_high_cap", "data/flownetwork/capacity", "Grafo High Capacity")
+
+	fnLow := flownetwork.NewFlowNetwork(numNodes, source, sink)
+
+	for u := 0; u < fnHigh.N; u++ {
+		for _, edge := range fnHigh.OutStars[u] {
+			if edge.Capacity > 0 {
+				newCap := edge.Capacity % lowFactor
+				if newCap == 0 {
+					newCap++
+				}
+				fnLow.AddEdge(edge.From, edge.To, newCap)
+			}
+		}
+	}
+
+	fnLow.ToDIMACS("graph_low_cap", "data/flownetwork/capacity", "Grafo Low Capacity")
 }
