@@ -17,11 +17,12 @@
 \usepackage[italian]{babel} % Italiano
 \usepackage{amsfonts}
 \usepackage{optidef} % Stile Ricerca Operativa
-\addbibresource{bibliography.bib}
+\usepackage{pgfplots}
 
+\pgfplotsset{compat=1.17}
 \SetAlgorithmName{Algoritmo} % Italiano per algoritmi
 
-
+\addbibresource{bibliography.bib}
 
 \newcommand{\set}[1]{\mathcal{#1}}
 
@@ -35,9 +36,17 @@
     Il problema consiste nel trovare il massimo flusso che può essere mandato da un nodo a un altro di un grafo.
     Il nodo da cui parte il flusso viene chiamato \textit{source}, o \textit{sorgente} in italiano, mentre quello che riceve il flusso viene chiamato \textit{sink}, o \textit{pozzo} in italiano.
 
-    Formalmente, sia $G=(\set N,\set A)$ un grafo orientato in cui $\set N$ è l'insieme dei nodi ed $\set A$ è l'insieme degli archi.
+    Formalmente, sia $G=(\set N,\set A)$ un grafo orientato in cui $\set N$ è l'insieme dei nodi ed $\set A$ è l'insieme degli archi tali per cui $|\set N| = n$ e $|\set A| = m$.
     Ad ogni coppia di nodi $(u,v)\in \set N\times \set N$, viene associata una capacità non negativa $c(u,v)\ge0$.
     Se $(u,v)\notin\set A$, allora $c(u,v)=0$.
+
+    \begin{figure}[ht]
+        \centering
+        \input{flusso}
+        \caption{Flusso}
+        \label{fig:flusso}
+    \end{figure}
+
 
     Viene inoltre definito il flusso, una funzione $f:\set N\times \set N\to\mathbb{R}$ tale per cui a ogni arco viene associato un flusso non negativo e sempre inferiore alla capacità dell'arco:
     $$0\le f(u,v)\le c(u,v)\quad\forall (u,v)\in \set A$$
@@ -45,37 +54,37 @@
     Dato un nodo sorgente $s$ e un nodo pozzo $t$, l'obiettivo del problema è massimizzare il flusso uscente da $s$ ed entrante in $t$:
     $$f^* = \sum_{v\in \set N}\left(f(s,v)-f(v,s)\right)$$
 
-    Il problema può essere espresso anche come un problema di \textit{Programmazione Lineare} (PL) con una funzione obiettivo e dei vincoli di conservazione del flusso, definendo le variabili $f_{ij}$ per indicare il flusso $f(i,j)$ e le variabili $c_{ij}$ per indicare la capacità $c(i,j)$:
+    Il problema può essere espresso anche come un problema di \textit{Programmazione Lineare} (PL) con una funzione obiettivo e dei vincoli di conservazione del flusso, definendo le variabili $f_{uv}$ per indicare il flusso $f(u,v)$ e le variabili $c_{uv}$ per indicare la capacità $c(u,v)$:
 
     \begin{maxi*}
     {}
     {z}
     {}
     {}
-        \addConstraint{\sum_{(i\in\set N:(i,j)\in \set A)}f_{ij}-\sum_{(i\in\set N:(j,i)\in \set A)}f_{ij}}{=\begin{cases}
-                                                                                                                 -z&\text{se }j=s\\
+        \addConstraint{\sum_{(u\in\set N:(u,v)\in \set A)}f_{uv}-\sum_{(u\in\set N:(v,u)\in \set A)}f_{uv}}{=\begin{cases}
+                                                                                                                 -z&\text{se }v=s\\
                                                                                                                  0&\forall j\ne s,t\\
-                                                                                                                 z&\text{se }j=t
+                                                                                                                 z&\text{se }v=t
         \end{cases}}
-        \addConstraint{0\le f_{ij}\le c_{ij}\qquad\qquad\qquad\qquad}{\forall(i,j)\in\set A}
+        \addConstraint{0\le f_{uv}\le c_{uv}\qquad\qquad\qquad\qquad}{\forall(u,v)\in\set A}
     \end{maxi*}
 
     Essendo un problema di programmazione lineare, esiste anche un problema duale, denominato problema del minimo taglio (Min Cut).
     Si definiscono le variabili duali:
     \begin{itemize}
-        \item $y_i$: le variabili associate ai vincoli di conservazione del flusso nel problema primale;
-        \item $\omega_{ij}$: le variabili associate ai vincoli di capacità degli archi.
+        \item $y_i$: le variabili associate ai vincoli di conservazione del flusso nel problema primale $\forall i\in \set N$;
+        \item $\omega_{uv}$: le variabili associate ai vincoli di capacità degli archi $\forall (u,v)\in\set A$.
     \end{itemize}
     La sua formulazione matematica è la seguente:
     \begin{mini*}
     {}
-    {w=\sum_{(i,j)\in\set A}c_{ij}\omega_{ij}}
+    {w=\sum_{(u,v)\in\set A}c_{uv}\omega_{uv}}
     {}
     {}
-        \addConstraint{y_j-y_i+\omega_{ij}}{\ge0}{\qquad\forall (i,j)\in\set A}
+        \addConstraint{y_v-y_u+\omega_{uv}}{\ge0}{\qquad\forall (u,v)\in\set A}
         \addConstraint{y_s-y_t}{\ge1}{}
         \addConstraint{y_i}{\text{ libere}}{\qquad\forall i\in\set N}
-        \addConstraint{\omega_{ij}}{\ge0}{\qquad\forall(i,j)\in\set A}
+        \addConstraint{\omega_{uv}}{\ge0}{\qquad\forall(u,v)\in\set A}
     \end{mini*}
 
     Grazie al teorema della dualità in forma forte, si ha un'importante risultato che collega il problema primale (Max Flow) al problema duale (Min Cut):
@@ -86,7 +95,7 @@
     Il progetto si pone come obiettivo principale l'analisi comparativa approfondita di diverse strategie risolutive per il problema del Massimo Flusso.
     Lo studio mira a valutare l'efficienza e la scalabilità di cinque distinti algoritmi, presentati nel dettaglio nel Capitolo~\ref{ch:algoritmi}, mettendone in luce i punti di forza e le criticità attraverso un approccio sperimentale.
 
-    Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio babyset, BVZ-tsukuba e K2Z-venus.
+    Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio babyface, BVZ-tsukuba e K2Z-venus.
     Questi dataset rappresentano istanze reali derivanti da problemi di segmentazione di immagini, nelle quali ogni pixel è modellato come un nodo del grafo.
 
     Sono anche stati generati dei grafi attraverso una funzione di generazione casuale che, presi in input il numero di nodi $n$ e la densità $d$, genera un grafo con $n$ nodi e $m_{\max}\cdot d$ archi, dove $m_{\max} = n\cdot(n-1)$ in quanto $G$ è definito come un grafo diretto.
@@ -105,6 +114,8 @@
     \section{Capacity Scaling}\label{sec:cs}
     L'algoritmo Capacity Scaling esamina il grafo $G$ partendo dagli archi $(u,v)\in E$ tali per cui $c(u,v)-f(u,v)\ge\Delta$, dove $\Delta$ è un valore progressivamente decrescente che viene inizializzato alla più grande potenza di $2$ che sia minore della capacità massima tra gli archi.
     In questo modo, l'algoritmo cerca di trovare i percorsi dove la capacità residua degli archi è la più alta possibile, lasciando per ultimi quelli che influiscono in maniera minore sul valore del flusso massimo.
+
+    Definendo $C$ la capacità massima tra gli archi del grafo, la complessità temporale dell'algoritmo è $O(m^{2}\log C)$.
 
     \begin{algorithm}[H]
         \DontPrintSemicolon
@@ -159,6 +170,8 @@
     Lo Shortest Augmenting Path è un algoritmo che esamina il grafo $G$ partendo dai percorsi più brevi possibile, ovverosia i percorsi con il minor numero di archi attraversati per arrivare da \textit{source} a \textit{sink}.
 
     In questo modo, l'algoritmo dà priorità ai percorsi che sono più veloci per arrivare al nodo pozzo, effettuando per ultimi le augmentazioni che riguardano percorsi con un numero elevato di archi da percorrere.
+
+    La complessità temporale dell'algoritmo è $O(n^{2}m)$.
 
     \begin{algorithm}[H]
         \DontPrintSemicolon
@@ -238,6 +251,8 @@
     La logica del calcolo del $\Delta$ è uguale a quella di Capacity Scaling.
     L'obiettivo è dunque focalizzarsi su percorsi che hanno pochi archi e con capacità alte, combinando le tecniche dei due algoritmi.
 
+    La complessità temporale dell'algoritmo è $O(nm\log C)$, che risulta essere un bilanciamento tra la complessità vista con Shortest Augmenting Path e quella vista con Capacity Scaling.
+
     \begin{algorithm}[H]
         \DontPrintSemicolon
         \SetKwFunction{FScalingSAP}{ScalingSAP}
@@ -284,6 +299,8 @@
     In entrambi i casi, una volta costruito il grafo dei livelli e assegnato un livello ad ogni nodo del grafo, la DFS ricerca il percorso augmentante usando come archi ammissibili solo gli archi $(u,v)\in E$ tali per cui:
     $$level[v]=level[u]+1$$
     e che hanno ancora flusso disponibile (cioè tali per cui $f(u,v)<c(u,v)$).
+
+    La complessità temporale dell'algoritmo è $O(n^{2}m)$.
 
     \begin{algorithm}[H]
     \DontPrintSemicolon
@@ -336,7 +353,72 @@
 
     L'utilizzo della ricorsione potrebbe, tuttavia, portare a uno \textit{stack overflow} nel caso di grafi grandi e complessi.
 
+    \section{Tabella riassuntiva}\label{sec:tabella}
+    In tabella \ref{tab:complessità} sono presenti le complessità temporali e spaziali degli algoritmi.
+
+    \begin{table}[h]
+        \centering
+        \caption{Riassunto delle complessità temporali e spaziali}
+        \label{tab:complessità}
+        \begin{tabular}{|c|cc|}
+            \hline
+            Algoritmo & Complessità Temporale & Complessità Spaziale\\\hline
+            Capacity Scaling & $O(m^2\log C)$ & $O(n+m)$\\
+            Shortest Augmenting Path & $O(n^{2}m)$ & $O(n+m)$\\
+            CS + SAP & $O(nm\log C)$ & $O(n+m)$\\
+            Dinic & $O(n^{2}m)$ & $O(n+m)$\\
+            \hline
+        \end{tabular}
+    \end{table}
+
+
     \chapter{Risultati}\label{ch:risultati}
+    Per eseguire l'esperimento, è stata utilizzata una macchina dotata di 16GB di RAM e un processore Intel\textregistered\ Core\texttrademark\ i7-11700F con 8 Core.
+    I tempi assoluti presenti nelle analisi di questo report dipendono strettamente dall'hardware utilizzato, dunque l'attenzione verrà posta solo ai tempi relativi e ai confronti tra i vari algoritmi.
+
+    \section{Analisi di Scalabilità}\label{sec:scalability}
+    Una delle analisi importanti per degli algoritmi di massimo flusso è la loro \textit{scalabilità}, ovvero l'aumento del tempo di esecuzione all'aumentare della grandezza dell'input.
+
+    Come evidenziato in Figura~\ref{fig:scal}, l'andamento lineare dei punti nel grafico di dispersione in scala logaritmica indica che i tempi di esecuzione crescono in maniera polinomiale rispetto al numero di archi $m$.
+    Questo comportamento è coerente con la complessità teorica degli algoritmi analizzati (che dipendono da $m$ e dal numero di nodi $n$).
+
+    \begin{figure}[ht]
+        \centering
+        \input{../internal/analysis/scalability_high}
+        \caption{Scalabilità}
+        \label{fig:scal}
+    \end{figure}
+
+    Sempre dalla figura~\ref{fig:scal}, si nota come l'implementazione ricorsiva di Dinic e Shortest Augmenting Path siano dominanti rispetto ai restanti tre algoritmi.
+    Dinic ricorsivo risulta essere più efficiente quando il numero di archi è ridotto, mentre Shortest Augmenting Path risulta migliore quando il numero di archi è maggiore.
+
+    \section{Analisi delle capacità}\label{sec:analisi_capacita}
+
+    \begin{figure}[ht]
+        \centering
+        \input{../internal/analysis/capacity}
+        \caption{}
+        \label{fig:}
+    \end{figure}
+
+    TODO: analisi su questo grafico
+
+    \section{Analisi su dataset reali}\label{sec:analisi_reale}
+
+    \begin{figure}[ht]
+        \centering
+        \input{../internal/analysis/real}
+        \caption{Prestazioni sul dataset di Visione Artificiale BVZ-Tsukuba}
+        \label{fig:real_test}
+    \end{figure}
+
+    Dal grafico in Figura~\ref{fig:real_test}, si può notare come negli algoritmi di visione artificiale, come BVZ-Tsukuba~\cite{dataset}, a dominare sia l'algoritmo di Dinic, nella versione ricorsiva.
+    Shortest Augmenting Path, sia da solo sia nella versione con Capacity Scaling, ha delle prestazioni leggermente inferiori.
+
+    L'algoritmo più in difficoltà risulta essere nuovamente Capacity Scaling, che risolve il problema in più di $100s$ (per confronto, Dinic in versione ricorsiva ha risolto il problema in $\approx 0.1s$).
+    L'enorme differenza tra i due algoritmi potrebbe essere data dalla tipologia di dataset utilizzato: BVZ-Tsukuba utilizza capacità relativamente piccole, con $\log C = 10$, iterando dunque su poche fasi ma molto complesse.
+
+    TODO: inserire performance su Venus e Babyface
 
     \chapter{Conclusioni}\label{ch:conclusioni}
 
