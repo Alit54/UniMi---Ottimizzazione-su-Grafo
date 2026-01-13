@@ -8,26 +8,22 @@ import (
 	"strings"
 )
 
-// FlowEdge rappresenta un arco nel grafo, sia iniziale (Capacity) che dei residui (Flow). Rappresenta un arco (From -> To) e ha l'indice dell'arco inverso (To -> From).
 type FlowEdge struct {
-	From     int // Nodo sorgente
-	To       int // Nodo destinazione
-	Capacity int // Capacità dell'arco
-	Flow     int // Flusso corrente sull'arco
-	Reverse  int // Indice dell'arco inverso
+	From     int
+	To       int
+	Capacity int
+	Flow     int
+	Reverse  int
 }
 
-// FlowNetwork rappresenta una rete di flusso.
 type FlowNetwork struct {
-	N        int           // Numero di nodi
-	Arcs     int           // Numero di archi
-	OutStars [][]*FlowEdge // Lista di adiacenza: OutStars[i] = archi uscenti da i
-	InStars  [][]*FlowEdge // Lista di adiacenza: InStars[i] = archi entranti in i
-	Source   int           // Nodo sorgente
-	Sink     int           // Nodo pozzo
+	N        int
+	Arcs     int
+	OutStars [][]*FlowEdge
+	Source   int
+	Sink     int
 }
 
-// NewFlowNetwork crea una rete di flusso con n nodi, senza archi
 func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 	fmt.Println(n, sink, source)
 	if source < 0 || source >= n {
@@ -41,10 +37,8 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 	}
 
 	outStars := make([][]*FlowEdge, n)
-	inStars := make([][]*FlowEdge, n)
 	for i := 0; i < n; i++ {
 		outStars[i] = []*FlowEdge{}
-		inStars[i] = []*FlowEdge{}
 	}
 
 	return &FlowNetwork{
@@ -52,7 +46,6 @@ func NewFlowNetwork(n int, source int, sink int) *FlowNetwork {
 		Source:   source,
 		Sink:     sink,
 		OutStars: outStars,
-		InStars:  inStars,
 	}
 }
 
@@ -87,9 +80,6 @@ func NewNetworkFromDIMACS(path string) *FlowNetwork {
 		if parts[0] == "a" {
 			from, _ := strconv.Atoi(parts[1])
 			to, _ := strconv.Atoi(parts[2])
-			if fn.arcExists(from-1, to-1) {
-				continue
-			}
 			capacity, _ := strconv.Atoi(parts[3])
 			if capacity > 0 {
 				fn.AddEdge(from-1, to-1, capacity)
@@ -107,44 +97,42 @@ func (fn *FlowNetwork) AddEdge(from int, to int, capacity int) {
 	if from == to {
 		panic("Self-loop non ammessi")
 	}
-	directArc := FlowEdge{
+
+	idxFrom := len(fn.OutStars[from])
+	idxTo := len(fn.OutStars[to])
+
+	forward := &FlowEdge{
 		From:     from,
 		To:       to,
 		Capacity: capacity,
 		Flow:     0,
+		Reverse:  idxTo,
 	}
-	fn.OutStars[from] = append(fn.OutStars[from], &directArc)
-	fn.InStars[to] = append(fn.InStars[to], &directArc)
-	fn.Arcs++
-}
 
-// PushFlow invia δ unità di flusso lungo l'arco che va da from a
-func (fn *FlowNetwork) PushFlow(from int, to int, delta int) {
-	edgeIndex := -1
-	for i, edge := range fn.OutStars[from] {
-		if edge.To == to {
-			edgeIndex = i
-		}
+	backward := &FlowEdge{
+		From:     to,
+		To:       from,
+		Capacity: 0,
+		Flow:     0,
+		Reverse:  idxFrom,
 	}
-	edge := fn.OutStars[from][edgeIndex]
-	residual := edge.Capacity - edge.Flow
-	if delta > residual {
-		panic("Delta supera la capacità residua disponibile")
-	}
-	edge.Flow += delta
+
+	fn.OutStars[from] = append(fn.OutStars[from], forward)
+	fn.OutStars[to] = append(fn.OutStars[to], backward)
+	fn.Arcs++
 }
 
 func (fn *FlowNetwork) PushFlowWithIndex(from int, index int, delta int) {
 	edge := fn.OutStars[from][index]
-
 	residual := edge.Capacity - edge.Flow
 	if delta > residual {
 		panic("Delta supera la capacità residua disponibile")
 	}
+
 	edge.Flow += delta
+	fn.OutStars[edge.To][edge.Reverse].Flow -= delta
 }
 
-// Reset azzera il flusso corrente di ogni arco, riportandolo allo stato di origine.
 func (fn *FlowNetwork) Reset() {
 	for i := 0; i < fn.N; i++ {
 		for j := range fn.OutStars[i] {
@@ -153,7 +141,6 @@ func (fn *FlowNetwork) Reset() {
 	}
 }
 
-// GetMaxFlowValue calcola il valore del flusso finale da source a sink
 func (fn *FlowNetwork) GetMaxFlowValue() int {
 	maxFlow := 0
 	for _, edge := range fn.OutStars[fn.Source] {
@@ -169,13 +156,4 @@ func (fn *FlowNetwork) validateArcs(from int, to int) {
 	if to < 0 || to >= fn.N {
 		panic("Nodo 'to' non valido")
 	}
-}
-
-func (fn *FlowNetwork) arcExists(from int, to int) bool {
-	for _, arc := range fn.OutStars[from] {
-		if arc.To == to {
-			return true
-		}
-	}
-	return false
 }

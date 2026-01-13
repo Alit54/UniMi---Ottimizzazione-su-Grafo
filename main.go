@@ -1,15 +1,16 @@
 package main
 
 import (
+	"OttimizzazioneSuGrafo/internal/benchmark"
 	"OttimizzazioneSuGrafo/internal/flownetwork"
 	"fmt"
 )
 
 func main() {
 	//generateCustomBenchmarkProblems()
-	generateCapacityProblem(1000, 0.5, 100000, 0, 1, 10)
+	//generateCapacityProblem(1000, 0.5, 100000, 0, 1, 10)
 	//benchmark.Run("data/flownetwork/custom", "export/benchmark_results.csv")
-	//benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results.csv")
+	benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results_try.csv")
 	//benchmark.Run("data/flownetwork/KZ2-venus", "export/benchmark_results.csv")
 	//benchmark.Run("data/flownetwork/babyface", "export/benchmark_results.csv")
 }

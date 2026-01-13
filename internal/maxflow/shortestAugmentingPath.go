@@ -2,101 +2,85 @@ package maxflow
 
 import (
 	"OttimizzazioneSuGrafo/internal/flownetwork"
-	"encoding/json"
-	"fmt"
 	"math"
-	"os"
 )
 
 type ShortestAugmentingPath struct{}
 
-func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
-	return sap.RunWithThreshold(fn, 1, saveSteps)
+func (sap *ShortestAugmentingPath) Run(fn *flownetwork.FlowNetwork) (maxFlow int, stats Stats) {
+	return sap.RunWithThreshold(fn, 1)
 }
 
-func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork, threshold int, saveSteps bool) (maxFlow int, stats Stats) {
-	current := fn.Source
-	step := 0
-	if saveSteps {
-		initialDist := make([]int, fn.N)
-		sap.saveStep(fn, step, "Start", "Stato iniziale", current, initialDist, nil)
-	}
+func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork, threshold int) (maxFlow int, stats Stats) {
 	distance, number := sap.exactDistance(fn, threshold)
 	if distance[fn.Source] >= fn.N {
 		return
 	}
+
 	predecessor := make([]int, fn.N)
+	edgeIndices := make([]int, fn.N)
 	currentArc := make([]int, fn.N)
 	for i := 0; i < fn.N; i++ {
 		predecessor[i] = -1
+		edgeIndices[i] = -1
 	}
-	if saveSteps {
-		step++
-		sap.saveStep(fn, step, "Start", "Distanze calcolate", current, distance, nil)
-	}
+
+	current := fn.Source
 	for distance[fn.Source] < fn.N {
 		admissibleEdge := sap.findAdmissibleEdge(fn, current, distance, currentArc, threshold)
 		if admissibleEdge != -1 {
-			// ADVANCE
 			stats.Advances++
 			edge := fn.OutStars[current][admissibleEdge]
 			next := edge.To
 			predecessor[next] = current
+			edgeIndices[next] = admissibleEdge
 			current = next
-			if saveSteps {
-				step++
-				sap.saveStep(fn, step, "Advances", fmt.Sprintf("Advances al nodo %d", current), current, distance, nil)
-			}
+
 			if current == fn.Sink {
-				delta, path := sap.augment(fn, predecessor)
+				delta := sap.augment(fn, predecessor, edgeIndices)
+				maxFlow += delta
 				stats.Augments++
-				if saveSteps {
-					step++
-					sap.saveStep(fn, step, "Augment", fmt.Sprintf("Augmenting Path trovato (Cap: %d)", delta), current, distance, path)
-				}
 				current = fn.Source
 			}
 		} else {
-			oldLabel := distance[current]
 			endTest := sap.retreat(fn, current, distance, number, currentArc, threshold)
 			if endTest {
 				break
 			}
 			stats.Retreats++
-			if saveSteps {
-				step++
-				sap.saveStep(fn, step, "Retreat", fmt.Sprintf("Retreat del nodo %d: (%d -> %d)", current, oldLabel, distance[current]), current, distance, nil)
-			}
 			if current != fn.Source {
 				current = predecessor[current]
 			}
 		}
 	}
-	maxFlow = fn.GetMaxFlowValue()
 	return
 }
 
 func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, threshold int) ([]int, []int) {
 	distance := make([]int, fn.N)
-	number := make([]int, fn.N+2)
+	number := make([]int, fn.N+1)
 	for i := 0; i < fn.N; i++ {
 		distance[i] = fn.N
-		number[fn.N]++
 	}
 	distance[fn.Sink] = 0
-	number[0]++
-	queue := []int{fn.Sink}
+	number[0] = 1
+
+	queue := make([]int, 0, fn.N)
+	queue = append(queue, fn.Sink)
+
 	for len(queue) > 0 {
 		current := queue[0]
 		queue = queue[1:]
-		for _, edge := range fn.InStars[current] {
-			previous := edge.From
-			residual := edge.Capacity - edge.Flow
-			if distance[previous] > distance[current]+1 && residual >= threshold {
-				number[distance[previous]]--
-				distance[previous] = distance[current] + 1
-				number[distance[previous]]++
-				queue = append(queue, previous)
+
+		for _, edge := range fn.OutStars[current] {
+			neighbor := edge.To
+			reverseEdge := fn.OutStars[neighbor][edge.Reverse]
+			residual := reverseEdge.Capacity - reverseEdge.Flow
+
+			if distance[neighbor] == fn.N && residual >= threshold {
+				distance[neighbor] = distance[current] + 1
+				number[distance[neighbor]]++
+				queue = append(queue, neighbor)
 			}
 		}
 	}
@@ -112,6 +96,7 @@ func (sap *ShortestAugmentingPath) findAdmissibleEdge(fn *flownetwork.FlowNetwor
 			return i
 		}
 	}
+	currentArc[node] = len(fn.OutStars[node])
 	return -1
 }
 
@@ -125,128 +110,43 @@ func (sap *ShortestAugmentingPath) retreat(fn *flownetwork.FlowNetwork, node int
 			}
 		}
 	}
+
 	number[distance[node]]--
 	if number[distance[node]] == 0 {
 		return true
 	}
+
 	distance[node] = minDistance + 1
 	number[distance[node]]++
 	currentArc[node] = 0
 	return false
 }
 
-func (sap *ShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predecessor []int) (int, []int) {
-	path := []int{}
-	node := fn.Sink
-	for node != fn.Source {
-		path = append([]int{node}, path...)
-		node = predecessor[node]
-	}
-	path = append([]int{fn.Source}, path...)
+func (sap *ShortestAugmentingPath) augment(fn *flownetwork.FlowNetwork, predecessor []int, edgeIndices []int) int {
 	delta := math.MaxInt
-	for i := 0; i < len(path)-1; i++ {
-		from := path[i]
-		to := path[i+1]
-		for _, edge := range fn.OutStars[from] {
-			if edge.To == to {
-				residual := edge.Capacity - edge.Flow
-				if residual < delta {
-					delta = residual
-				}
-				break
-			}
+
+	curr := fn.Sink
+	for curr != fn.Source {
+		prev := predecessor[curr]
+		idx := edgeIndices[curr]
+		edge := fn.OutStars[prev][idx]
+		residual := edge.Capacity - edge.Flow
+		if residual < delta {
+			delta = residual
 		}
-	}
-	AugmentFlow(fn, path, delta)
-	return delta, path
-}
-
-func (sap *ShortestAugmentingPath) saveStep(
-	fn *flownetwork.FlowNetwork,
-	step int,
-	stepType string,
-	description string,
-	currentNode int,
-	distances []int,
-	path []int,
-) {
-	// Strutture Dati per JSON
-	type NodeInfo struct {
-		ID        int  `json:"id"`
-		Distance  int  `json:"distance"` // La label richiesta
-		IsSource  bool `json:"is_source"`
-		IsSink    bool `json:"is_sink"`
-		IsCurrent bool `json:"is_current"`
+		curr = prev
 	}
 
-	type EdgeInfo struct {
-		From     int  `json:"from"`
-		To       int  `json:"to"`
-		Capacity int  `json:"capacity"`
-		Flow     int  `json:"flow"`
-		Residual int  `json:"residual"`
-		InPath   bool `json:"in_path"`
-	}
+	curr = fn.Sink
+	for curr != fn.Source {
+		prev := predecessor[curr]
+		idx := edgeIndices[curr]
 
-	type Snapshot struct {
-		Iteration   int        `json:"step"`
-		StepType    string     `json:"step_type"` // Advances, Retreat, Augment
-		Description string     `json:"description"`
-		Nodes       []NodeInfo `json:"nodes"`
-		Edges       []EdgeInfo `json:"edges"`
-	}
+		edge := fn.OutStars[prev][idx]
+		edge.Flow += delta
+		fn.OutStars[edge.To][edge.Reverse].Flow -= delta
 
-	// Costruzione Snapshot
-	nodes := make([]NodeInfo, fn.N)
-	for i := 0; i < fn.N; i++ {
-		nodes[i] = NodeInfo{
-			ID:        i,
-			Distance:  distances[i], // Qui salviamo la label distanza!
-			IsSource:  i == fn.Source,
-			IsSink:    i == fn.Sink,
-			IsCurrent: i == currentNode,
-		}
+		curr = prev
 	}
-
-	// Set per lookup veloce del path
-	pathSet := make(map[string]bool)
-	if path != nil {
-		for i := 0; i < len(path)-1; i++ {
-			key := fmt.Sprintf("%d-%d", path[i], path[i+1])
-			pathSet[key] = true
-		}
-	}
-
-	edges := []EdgeInfo{}
-	for i := 0; i < fn.N; i++ {
-		for _, edge := range fn.OutStars[i] {
-			if edge.Capacity > 0 { // Solo archi 'reali'
-				residual := edge.Capacity - edge.Flow
-				key := fmt.Sprintf("%d-%d", i, edge.To)
-				edges = append(edges, EdgeInfo{
-					From:     i,
-					To:       edge.To,
-					Capacity: edge.Capacity,
-					Flow:     edge.Flow,
-					Residual: residual,
-					InPath:   pathSet[key],
-				})
-			}
-		}
-	}
-
-	snap := Snapshot{
-		Iteration:   step,
-		StepType:    stepType,
-		Description: description,
-		Nodes:       nodes,
-		Edges:       edges,
-	}
-
-	// Scrittura su file
-	filename := fmt.Sprintf("export/graphical_steps/shortest_augmenting_path/step_%04d.json", step)
-	file, _ := os.Create(filename)
-	defer file.Close()
-	jsonData, _ := json.MarshalIndent(snap, "", "  ")
-	file.Write(jsonData)
+	return delta
 }

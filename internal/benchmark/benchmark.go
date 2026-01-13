@@ -27,7 +27,7 @@ func Benchmark(fn *flownetwork.FlowNetwork, nameAlg string, algorithm interface{
 	for i := 0; i < iterations; i++ {
 		fmt.Println("RUNNING", nameAlg, "on Instance", path)
 		start := time.Now()
-		maxFlow, stats = algorithm.Run(fn, false)
+		maxFlow, stats = algorithm.Run(fn)
 		end := time.Now()
 		totalTime += end.Sub(start)
 	}
@@ -36,7 +36,7 @@ func Benchmark(fn *flownetwork.FlowNetwork, nameAlg string, algorithm interface{
 		fmt.Println("RE-RUNNING", nameAlg, "on Instance", path, "with", iterations, "iterations")
 		for i := 0; i < iterations; i++ {
 			start := time.Now()
-			maxFlow, stats = algorithm.Run(fn, false)
+			maxFlow, stats = algorithm.Run(fn)
 			end := time.Now()
 			totalTime += end.Sub(start)
 		}

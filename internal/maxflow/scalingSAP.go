@@ -2,18 +2,18 @@ package maxflow
 
 import (
 	"OttimizzazioneSuGrafo/internal/flownetwork"
-	"math"
+	"math/bits"
 )
 
 type ScalingSAP struct{}
 
-func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlow int, stats Stats) {
+func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork) (maxFlow int, stats Stats) {
 	maxCapacity := csSap.findMaxCapacity(fn)
 	delta := csSap.initializeDelta(maxCapacity)
 	sap := ShortestAugmentingPath{}
 	for delta >= 1 {
 		stats.Phases++
-		_, tempStats := sap.RunWithThreshold(fn, delta, saveSteps)
+		_, tempStats := sap.RunWithThreshold(fn, delta)
 		stats.Advances += tempStats.Advances
 		stats.Retreats += tempStats.Retreats
 		stats.Augments += tempStats.Augments
@@ -23,11 +23,10 @@ func (csSap ScalingSAP) Run(fn *flownetwork.FlowNetwork, saveSteps bool) (maxFlo
 }
 
 func (csSap ScalingSAP) initializeDelta(maxCapacity int) int {
-	delta := 0
-	if maxCapacity > 0 {
-		delta = int(math.Pow(2, math.Floor(math.Log2(float64(maxCapacity)))))
+	if maxCapacity <= 0 {
+		return 0
 	}
-	return delta
+	return 1 << (bits.Len(uint(maxCapacity)) - 1)
 }
 
 func (csSap ScalingSAP) findMaxCapacity(fn *flownetwork.FlowNetwork) int {
