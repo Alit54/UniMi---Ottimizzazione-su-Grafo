@@ -58,7 +58,7 @@ func (sap *ShortestAugmentingPath) RunWithThreshold(fn *flownetwork.FlowNetwork,
 
 func (sap *ShortestAugmentingPath) exactDistance(fn *flownetwork.FlowNetwork, threshold int) ([]int, []int) {
 	distance := make([]int, fn.N)
-	number := make([]int, fn.N+1)
+	number := make([]int, fn.N+2)
 	for i := 0; i < fn.N; i++ {
 		distance[i] = fn.N
 	}

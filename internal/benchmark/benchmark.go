@@ -32,7 +32,7 @@ func Benchmark(fn *flownetwork.FlowNetwork, nameAlg string, algorithm interface{
 		totalTime += end.Sub(start)
 	}
 	if totalTime == time.Duration(0) {
-		iterations = 1e6
+		iterations = 1e3
 		fmt.Println("RE-RUNNING", nameAlg, "on Instance", path, "with", iterations, "iterations")
 		for i := 0; i < iterations; i++ {
 			start := time.Now()
