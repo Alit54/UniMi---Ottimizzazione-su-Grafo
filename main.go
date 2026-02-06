@@ -12,7 +12,7 @@ func main() {
 	benchmark.Run("data/flownetwork/custom", "export/benchmark_results_2.csv")
 	//benchmark.Run("data/flownetwork/BVZ-tsukuba", "export/benchmark_results_2.csv")
 	//benchmark.Run("data/flownetwork/KZ2-venus", "export/benchmark_results_2.csv")
-	benchmark.Run("data/flownetwork/babyface", "export/benchmark_results_2.csv")
+	//benchmark.Run("data/flownetwork/babyface", "export/benchmark_results_2.csv")
 }
 
 func generateCustomBenchmarkProblems() {
