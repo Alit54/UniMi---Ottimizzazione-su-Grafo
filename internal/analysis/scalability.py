@@ -56,5 +56,5 @@ def generate_tex_scatterplot(csv_path, output_text="grafico_scalabilita.tex", lo
 """)
 
 if __name__ == "__main__":
-    generate_tex_scatterplot('export/benchmark_results.csv', output_text='internal/analysis/scalability', low=False)
-    generate_tex_scatterplot('export/benchmark_results.csv', output_text='internal/analysis/scalability', low=True)
+    generate_tex_scatterplot('../../export/benchmark_results_2.csv', output_text='scalability', low=False)
+    generate_tex_scatterplot('../../export/benchmark_results_2.csv', output_text='scalability', low=True)

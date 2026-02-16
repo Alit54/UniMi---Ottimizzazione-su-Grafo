@@ -5,19 +5,20 @@
         title={Impatto della Capacità sugli Algoritmi ($N=1000, D=0.5\%$)},
         width=0.95\textwidth,
         height=0.6\textwidth,
-        symbolic x coords={CS,CS + SAP,Dinic,Recursive Dinic,SAP},
+        symbolic x coords={CS,CS+SAP,Dinic,Rec.Dinic,SAP},
         xtick=data,
         ylabel={Tempo di Esecuzione (ms)},
-        legend style={at={(0.5,-0.15)}, anchor=north},
+        legend style={at={(0.5,-0.15)}, anchor=north, legend columns=-1},
         ymajorgrids=true,
-        %nodes near coords,
-        %nodes near coords style={font=\footnotesize},
+        grid style={dashed, gray!30},
+        nodes near coords,
+        nodes near coords style={font=\footnotesize},
         ymin=0
     ]
-    \addplot coordinates {(CS, 0.86) (CS + SAP, 0.45) (Dinic, 0.76) (Recursive Dinic, 0.89) (SAP, 0.14) };
-    \addlegendentry{Capacità $C=10$}
-    \addplot coordinates {(CS, 11.14) (CS + SAP, 0.78) (Dinic, 2.53) (Recursive Dinic, 0.13) (SAP, 0.02) };
-    \addlegendentry{Capacità $C=100.000$}
+    \addplot coordinates {(CS, 0.3) (CS+SAP, 0.4) (Dinic, 0.6) (Rec.Dinic, 0.6) (SAP, 0.2) };
+    \addlegendentry{Capacità $U=10$}
+    \addplot coordinates {(CS, 3.7) (CS+SAP, 1.3) (Dinic, 1.8) (Rec.Dinic, 0.9) (SAP, 0.2) };
+    \addlegendentry{Capacità $U=100.000$}
 
     \end{axis}
 \end{tikzpicture}

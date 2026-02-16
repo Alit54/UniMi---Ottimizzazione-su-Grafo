@@ -9,13 +9,13 @@ def clean_algo_name(name):
 
 def clean_dataset_name(name):
     base = os.path.basename(name)
-    base = base.replace("BVZ-tsukuba", "Tsukuba ").replace(".max", "").replace("7", "07")
+    base = base.replace("KZ2-venus", "Venus ").replace(".max", "").replace("7", "07")
     return base
 
-def generate_realworld_text(csv_path, output_text="internal/analysis/real.tex"):
+def generate_realworld_text(csv_path, output_text="real_venus.tex"):
     df = pd.read_csv(csv_path)
 
-    df = df[~df['Graph'].str.contains('custom', case=False)].copy()
+    df = df[df['Graph'].str.contains('venus', case=False)].copy()
 
     df['Time_ms'] = df['Time (nanoseconds)'] / 1_000_000.0
     df['Dataset_Name'] = df['Graph'].apply(clean_dataset_name)
@@ -64,4 +64,4 @@ def generate_realworld_text(csv_path, output_text="internal/analysis/real.tex"):
     print(f"File '{output_text}' generato.")
 
 if __name__ == "__main__":
-    generate_realworld_text('export/benchmark_results.csv')
+    generate_realworld_text('../../export/benchmark_results_2.csv')

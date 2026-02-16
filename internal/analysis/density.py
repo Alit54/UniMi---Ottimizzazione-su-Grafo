@@ -31,7 +31,7 @@ def generate_capacity_comparison(csv_path):
     # Calcoliamo la media se ci sono più run
     pivoted = subset.groupby(['Algorithm', 'C'])['Time_ms'].mean().unstack()
 
-    with open("internal/analysis/capacity.tex", "w") as f:
+    with open("capacity.tex", "w") as f:
         f.write(r"""
 \begin{tikzpicture}
     \begin{axis}[
@@ -72,4 +72,4 @@ def generate_capacity_comparison(csv_path):
     print("File 'grafico_capacita.tex' generato.")
 
 if __name__ == "__main__":
-    generate_capacity_comparison('export/benchmark_results.csv')
+    generate_capacity_comparison('../../export/benchmark_results_2.csv')

@@ -5,7 +5,7 @@
 \documentclass[11pt]{report}
 
 \author{Simone Alessandro Casciaro}
-\date{Dicembre 2025}
+\date{Febbraio 2026}
 \title{Progetto di Ottimizzazione su Grafo}
 
 % Packages
@@ -22,7 +22,9 @@
 \pgfplotsset{compat=1.17}
 \SetAlgorithmName{Algoritmo} % Italiano per algoritmi
 
-\addbibresource{bibliography.bib}
+% \addbibresource{bibliography.bib}
+\bibliographystyle{plain} % O 'unsrt', 'alpha', etc.
+\bibliography{bibliography}
 
 \newcommand{\set}[1]{\mathcal{#1}}
 
@@ -33,20 +35,12 @@
 
     \chapter{Introduzione}\label{ch:introduzione}
     Uno dei problemi più importanti di ottimizzazione combinatoria è il problema del massimo flusso (Max Flow).
-    Il problema consiste nel trovare il massimo flusso che può essere mandato da un nodo a un altro di un grafo.
+    Il problema consiste nel trovare il massimo flusso che può essere mandato da un nodo a un altro in un grafo.
     Il nodo da cui parte il flusso viene chiamato \textit{source}, o \textit{sorgente} in italiano, mentre quello che riceve il flusso viene chiamato \textit{sink}, o \textit{pozzo} in italiano.
 
     Formalmente, sia $G=(\set N,\set A)$ un grafo orientato in cui $\set N$ è l'insieme dei nodi ed $\set A$ è l'insieme degli archi tali per cui $|\set N| = n$ e $|\set A| = m$.
     Ad ogni coppia di nodi $(u,v)\in \set N\times \set N$, viene associata una capacità non negativa $c(u,v)\ge0$.
     Se $(u,v)\notin\set A$, allora $c(u,v)=0$.
-
-    \begin{figure}[ht]
-        \centering
-        \input{flusso}
-        \caption{Flusso}
-        \label{fig:flusso}
-    \end{figure}
-
 
     Viene inoltre definito il flusso, una funzione $f:\set N\times \set N\to\mathbb{R}$ tale per cui a ogni arco viene associato un flusso non negativo e sempre inferiore alla capacità dell'arco:
     $$0\le f(u,v)\le c(u,v)\quad\forall (u,v)\in \set A$$
@@ -95,7 +89,7 @@
     Il progetto si pone come obiettivo principale l'analisi comparativa approfondita di diverse strategie risolutive per il problema del Massimo Flusso.
     Lo studio mira a valutare l'efficienza e la scalabilità di cinque distinti algoritmi, presentati nel dettaglio nel Capitolo~\ref{ch:algoritmi}, mettendone in luce i punti di forza e le criticità attraverso un approccio sperimentale.
 
-    Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio babyface, BVZ-tsukuba e K2Z-venus.
+    Per l'obiettivo, sono stati utilizzati dei grafi presi dal dataset~\cite{dataset}, come ad esempio BVZ-tsukuba e K2Z-venus.
     Questi dataset rappresentano istanze reali derivanti da problemi di segmentazione di immagini, nelle quali ogni pixel è modellato come un nodo del grafo.
 
     Sono anche stati generati dei grafi attraverso una funzione di generazione casuale che, presi in input il numero di nodi $n$ e la densità $d$, genera un grafo con $n$ nodi e $m_{\max}\cdot d$ archi, dove $m_{\max} = n\cdot(n-1)$ in quanto $G$ è definito come un grafo diretto.
@@ -112,183 +106,48 @@
     \end{itemize}
 
     \section{Capacity Scaling}\label{sec:cs}
-    L'algoritmo Capacity Scaling esamina il grafo $G$ partendo dagli archi $(u,v)\in E$ tali per cui $c(u,v)-f(u,v)\ge\Delta$, dove $\Delta$ è un valore progressivamente decrescente che viene inizializzato alla più grande potenza di $2$ che sia minore della capacità massima tra gli archi.
+    L'algoritmo Capacity Scaling è un miglioramento dell'algoritmo di Ford-Fulkerson~\cite{Ford_Fulkerson} che esamina il grafo $G$ partendo dagli archi $(u,v)\in \set A$ tali per cui $c(u,v)-f(u,v)\ge\Delta$, dove $\Delta$ è un valore progressivamente decrescente che viene inizializzato alla più grande potenza di $2$ che sia minore della capacità massima tra gli archi.
     In questo modo, l'algoritmo cerca di trovare i percorsi dove la capacità residua degli archi è la più alta possibile, lasciando per ultimi quelli che influiscono in maniera minore sul valore del flusso massimo.
 
-    Definendo $C$ la capacità massima tra gli archi del grafo, la complessità temporale dell'algoritmo è $O(m^{2}\log C)$.
+    Le operazioni che vengono eseguite fintanto che $\Delta$ rimane invariato sono racchiuse in una fase chiamata \textit{scaling phase}.
+    Nell'algoritmo Capacity Scaling, il numero di scaling phases è logaritmico, in quanto alla fine di ogni fase il valore di $\Delta$ viene diviso per $2$ e l'algoritmo termina dopo che la fase $\Delta=1$ si conclude.
+    Una scaling phase termina quando, per un fissato valore di $\Delta$, non sono presenti cammini aumentanti tali per cui $c(u,v)-f(u,v)\ge\Delta$.
 
-    \begin{algorithm}[H]
-        \DontPrintSemicolon
-        \SetKwFunction{FCapScaling}{CapacityScaling}
-        \SetKwInOut{Input}{Input}
-        \SetKwInOut{Output}{Output}
-
-        \Input{Un grafo di flusso $G = (V, E)$, una capacità $c(u, v) \geq 0$, una sorgente $s$, un pozzo $t$}
-        \Output{Il valore del Flusso Massimo $f_{max}$}
-
-        \BlankLine
-        $C_{max} \leftarrow 0$\;
-        \ForEach{$(u, v) \in E$}{
-            \If{$c(u, v) > C_{max}$}{
-                $C_{max} \leftarrow c(u, v)$\;
-            }
-        }
-        $\Delta \leftarrow 2^{\lfloor \log_2(C_{max}) \rfloor}$
-
-        \BlankLine
-        \While{$\Delta \geq 1$}{
-            \While{True}{
-                $P \leftarrow \text{BFS}(G, s, t)$ tale che $\forall (u,v) \in P, \, c(u,v) - f(u,v) \geq \Delta$\;
-
-                \If{$P$ non esiste}{
-                    \textbf{break} \tcp*{Nessun cammino valido per l'attuale Delta}
-                }
-
-                $\delta \leftarrow \infty$\;
-                \ForEach{$(u, v) \in P$}{
-                    $r \leftarrow c(u, v) - f(u, v)$\;
-                    \If{$r < \delta$}{
-                        $\delta \leftarrow r$\;
-                    }
-                }
-
-                \ForEach{$(u, v) \in P$}{
-                    $f(u, v) \leftarrow f(u, v) + \delta$\;
-                }
-            }
-            $\Delta \leftarrow \Delta / 2$
-        }
-
-        $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
-        \Return{$f_{max}$}\;
-
-        \caption{Capacity Scaling}
-        \label{alg:capacity_scaling}
-    \end{algorithm}
+    Definendo $C$ la capacità massima tra gli archi del grafo, la complessità temporale dell'algoritmo è $O(m^{2}\log C)$. La complessità è dunque polinomiale perché $m$ e $\log C$ sono polinomiali rispetto al numero di bit usati per descrivere l'istanza del problema.
 
     \section{Shortest Augmenting Path}\label{sec:sap}
-    Lo Shortest Augmenting Path è un algoritmo che esamina il grafo $G$ partendo dai percorsi più brevi possibile, ovverosia i percorsi con il minor numero di archi attraversati per arrivare da \textit{source} a \textit{sink}.
+    Lo Shortest Augmenting Path è un altro algoritmo che migliora la base dettata da Ford e Fulkerson. Esso esamina il grafo $G$ partendo dai percorsi più brevi possibile, ovverosia i percorsi con il minor numero di archi attraversati per arrivare da \textit{source} a \textit{sink}.
 
-    In questo modo, l'algoritmo dà priorità ai percorsi che sono più veloci per arrivare al nodo pozzo, effettuando per ultimi le augmentazioni che riguardano percorsi con un numero elevato di archi da percorrere.
+    Si definisce una funzione di distanza sui nodi $d:\set N\to \mathbb{N}$ tale per cui:
+    \begin{itemize}
+        \item $d(t)=0$;
+        \item $d(u)\le d(v)+1\quad\forall (u,v)\in \set A:c(u,v)-f(u,v)>0$.
+    \end{itemize}
 
-    La complessità temporale dell'algoritmo è $O(n^{2}m)$.
+    All'inizio dell'esecuzione dell'algoritmo, viene eseguita una BFS inversa a partire dal nodo pozzo, etichettando tutti i nodi del grafo con la distanza che essi hanno dal pozzo.
 
-    \begin{algorithm}[H]
-        \DontPrintSemicolon
-        \SetKwFunction{FISAP}{ShortestAugmentingPath}
-        \SetKwFunction{FRevBFS}{ReverseBFS}
-        \SetKwInOut{Input}{Input}
-        \SetKwInOut{Output}{Output}
+    Durante l'esecuzione dell'algoritmo, la ricerca dei cammini aumentanti viene eseguita trattando come \textit{ammissibili} solo gli archi $(u,v)\in \set A$ che rispettano le seguenti proprietà:
+    \begin{itemize}
+        \item $c(u,v) - f(u,v) > 0$;
+        \item $d(u) = d(v)+1$.
+    \end{itemize}
 
-        \Input{Grafo $G=(V,E)$, capacità $c$, sorgente $s$, pozzo $t$}
-        \Output{Flusso Massimo $f_{max}$}
+    In questo modo, l'algoritmo dà priorità ai percorsi che sono più veloci per arrivare al nodo pozzo, effettuando per ultimi gli aumenti che riguardano percorsi con un numero elevato di archi da percorrere.
 
-        \BlankLine
-        $d \leftarrow \FRevBFS(G, t, \Delta)$ \;
-        $num[i] \leftarrow$ numero di nodi $n$ con distanza $d[n]=i\quad\forall i\in(0,|V|)$\;
-        $currentArc[u] \leftarrow 0, \forall u \in V$\;
-        $u \leftarrow s$\;
-
-        \BlankLine
-        \While{$d(s) < |V|$}{
-            $admissible \leftarrow \text{False}$\;
-
-            \For{$i \leftarrow currentArc[u]$ \KwTo $|Adj(u)| - 1$}{
-                $(u, v) \leftarrow Adj(u)[i]$\;
-                $res \leftarrow c(u, v) - f(u, v)$\;
-                \If{$res > 0$ \textbf{and} $d(u) = d(v) + 1$}{
-                    $admissible \leftarrow \text{True}$\;
-                    $currentArc[u] \leftarrow i$\;
-                    $pred[v] \leftarrow u$\;
-                    $u \leftarrow v$ \tcp*{ADVANCE}
-
-                    \If{$u = t$}{
-                        \tcp{AUGMENT}
-                        $path \leftarrow$ ricostruisci cammino usando $pred$\;
-                        $\delta \leftarrow \min_{(x,y) \in path} (c(x,y) - f(x,y))$\;
-                        \ForEach{$(x,y) \in path$}{
-                            $f(x,y) \leftarrow f(x,y) + \delta$\;
-                        }
-                        $u \leftarrow s$\;
-                    }
-                    \textbf{break}\;
-                }
-            }
-
-            \If{\textbf{not} $admissible$}{
-                \tcp{RETREAT}
-                $num[d(u)] \leftarrow num[d(u)] - 1$\;
-                \If{$num[d(u)] = 0$}{
-                    \textbf{break}
-                }
-
-                $min\_d \leftarrow |V|$\;
-                \ForEach{$(u, v) \in Adj(u)$}{
-                     $r \leftarrow c(u, v) - f(u, v)$\;
-                     \If{$r > 0$ \textbf{and} $d(v) < min\_d$}{
-                        $min\_d \leftarrow d(v)$\;
-                     }
-                }
-                $d(u) \leftarrow min\_d + 1$\;
-                $num[d(u)] \leftarrow num[d(u)] + 1$\;
-                $currentArc[u] \leftarrow 0$\;
-
-                \If{$u \neq s$}{
-                    $u \leftarrow pred[u]$\;
-                }
-            }
-        }
-
-        \Return{$\sum_{v \in V} f(s, v)$}\;
-
-        \caption{Shortest Augmenting Path}
-    \label{alg:sap}
-    \end{algorithm}
+    La complessità temporale dell'algoritmo è $O(n^{2}m)$, rendendolo quindi strettamente polinomiale rispetto al numero di nodi e archi del grafo.
 
     \section{Capacity Scaling con Shortest Augmenting Path}\label{sec:cs_sap}
-    Capacity Scaling con Shortest Augmenting Path è un algoritmo che combina i due presentati nella sezione~\ref{sec:cs} e~\ref{sec:sap}.
+    Capacity Scaling con Shortest Augmenting Path è un algoritmo che combina i due presentati nelle sezioni~\ref{sec:cs} e~\ref{sec:sap}.
     L'idea alla base dell'algoritmo è di utilizzare Shortest Augmenting Path come una \textit{sub-routine}, limitando la ricerca dei percorsi a quelli che hanno archi con una capacità superiore o uguale a $\Delta$.
-    La logica del calcolo del $\Delta$ è uguale a quella di Capacity Scaling.
-    L'obiettivo è dunque focalizzarsi su percorsi che hanno pochi archi e con capacità alte, combinando le tecniche dei due algoritmi.
+    La logica del calcolo del $\Delta$ è uguale a quella di Capacity Scaling: l'obiettivo dell'algoritmo è dunque focalizzarsi su percorsi che hanno pochi archi e con capacità alte, combinando le tecniche dei due algoritmi.
 
     La complessità temporale dell'algoritmo è $O(nm\log C)$, che risulta essere un bilanciamento tra la complessità vista con Shortest Augmenting Path e quella vista con Capacity Scaling.
 
-    \begin{algorithm}[H]
-        \DontPrintSemicolon
-        \SetKwFunction{FScalingSAP}{ScalingSAP}
-        \SetKwInOut{Input}{Input}
-        \SetKwInOut{Output}{Output}
-
-        \Input{Un grafo di flusso $G = (V, E)$, capacità $c(u, v) \geq 0$, sorgente $s$, pozzo $t$}
-        \Output{Il valore del Flusso Massimo $f_{max}$}
-
-        \BlankLine
-        $C_{max} \leftarrow 0$\;
-        \ForEach{$(u, v) \in E$}{
-            \If{$c(u, v) > C_{max}$}{
-                $C_{max} \leftarrow c(u, v)$\;
-            }
-        }
-        $\Delta \leftarrow 2^{\lfloor \log_2(C_{max}) \rfloor}$
-
-        \BlankLine
-        \While{$\Delta \geq 1$}{
-            \text{ShortestAugmentingPath}(G, s, t, \Delta)\;\\
-            $\Delta \leftarrow \Delta / 2$\;
-        }
-
-        $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
-        \Return{$f_{max}$}\;
-
-        \caption{Scaling Shortest Augmenting Path}
-        \label{alg:scaling_sap}
-    \end{algorithm}
-
     \section{Dinic}\label{sec:Dinic}
-    L'algoritmo di Dinic è un algoritmo fortemente polinomiale inventato nel 1970 per il problema del massimo flusso.
-    L'idea alla base dell'algoritmo è etichettare tutti i nodi con la distanza che hanno dal nodo sink, costruendo il \textit{grafo dei livelli} attraverso una BFS.
-    Una volta costruito il grafo dei livelli, si utilizza la DFS per cercare un cammino augmentante.
-    Quando la DFS non trova un percorso augmentante, viene interrotto il ciclo interno e generato un nuovo grafo dei livelli attraverso la BFS.
+    L'algoritmo di Dinic~\cite{Dinic} è un algoritmo fortemente polinomiale inventato nel 1970 per il problema del massimo flusso.
+    L'idea alla base dell'algoritmo è etichettare tutti i nodi con la distanza che hanno dal nodo sink, costruendo il \textit{grafo dei livelli} attraverso una BFS, in maniera analoga alla funzione distanza citato in Shortest Augmenting Path.
+    Una volta costruito il grafo dei livelli, si utilizza la DFS per cercare un cammino aumentante.
+    Quando la DFS non trova un percorso aumentante, viene interrotto il ciclo interno e generato un nuovo grafo dei livelli attraverso la BFS.
 
     In questo progetto vengono presentate due versioni di Dinic, che differiscono nel modo in cui la DFS viene implementata:
     \begin{itemize}
@@ -296,62 +155,13 @@
         \item versione ricorsiva.
     \end{itemize}
 
-    In entrambi i casi, una volta costruito il grafo dei livelli e assegnato un livello ad ogni nodo del grafo, la DFS ricerca il percorso augmentante usando come archi ammissibili solo gli archi $(u,v)\in E$ tali per cui:
+    In entrambi i casi, una volta costruito il grafo dei livelli e assegnato un livello ad ogni nodo del grafo, la DFS ricerca il percorso aumentante usando come archi ammissibili solo gli archi $(u,v)\in \set A$ tali per cui:
     $$level[v]=level[u]+1$$
     e che hanno ancora flusso disponibile (cioè tali per cui $f(u,v)<c(u,v)$).
 
     La complessità temporale dell'algoritmo è $O(n^{2}m)$.
 
-    \begin{algorithm}[H]
-    \DontPrintSemicolon
-    \SetKwFunction{FDinic}{DinicMaxFlow}
-    \SetKwInOut{Input}{Input}
-    \SetKwInOut{Output}{Output}
-
-    \Input{Grafo di flusso $G = (V, E)$, capacità $c$, sorgente $s$, pozzo $t$}
-    \Output{Il valore del Flusso Massimo $f_{max}$}
-
-    \BlankLine
-
-    \While{True}{
-        $level$ \leftarrow BFS(G,s,t)
-
-        \If{$level[t] = -1$}{
-            \textbf{break} \tcp*{Il pozzo non è raggiungibile}
-        }
-        \BlankLine
-        \While{True}{
-            $path$ \leftarrow DFS(G, level, s, t)\;
-            \BlankLine
-            \If{path\text{ is null}} {
-                \textbf{break} \tcp*{Nessun cammino in questo Level Graph}
-            }
-
-            $\delta \leftarrow \min \{ c(u,v) - f(u,v) \mid (u,v) \in path \}$\;
-
-            \ForEach{$(u, v) \in path$}{
-                $f(u, v) \leftarrow f(u, v) + \delta$\;
-            }
-        }
-    }
-
-    $f_{max} \leftarrow \sum_{v \in V} f(s, v)$\;
-    \Return{$f_{max}$}\;
-
-    \caption{Dinic}
-    \label{alg:dinic}
-    \end{algorithm}
-
-    \subsection{Dinic iterativo}\label{subsec:iterativo}
-    Nella versione iterativa della DFS, viene utilizzata una pila per tenere traccia dei nodi da espandere durante la ricerca del cammino augmentante.
-
-    Una volta che la DFS ha trovato un percorso augmentante, il flusso viene spinto su tale percorso.
-
-    \subsection{Dinic ricorsivo}\label{subsec:ricorsivo}
-    Nella versione ricorsiva della DFS, viene usato in maniera naturale lo \textit{stack} del sistema operativo.
-    Questa è la versione più usata in letteratura, in quanto la ricorsione risulta più efficiente rispetto all'utilizzo di un array come una pila e il codice è più semplice.
-
-    L'utilizzo della ricorsione potrebbe, tuttavia, portare a uno \textit{stack overflow} nel caso di grafi grandi e complessi.
+    \clearpage
 
     \section{Tabella riassuntiva}\label{sec:tabella}
     In tabella \ref{tab:complessità} sono presenti le complessità temporali e spaziali degli algoritmi.
@@ -384,7 +194,7 @@
 
     \begin{figure}[ht]
         \centering
-        \input{../internal/analysis/scalability_high}
+        \resizebox{0.9\textwidth}{!}{\input{../internal/analysis/scalability_high}}
         \caption{Scalabilità}
         \label{fig:scal}
     \end{figure}
@@ -393,34 +203,61 @@
     Dinic ricorsivo risulta essere più efficiente quando il numero di archi è ridotto, mentre Shortest Augmenting Path risulta migliore quando il numero di archi è maggiore.
 
     \section{Analisi delle capacità}\label{sec:analisi_capacita}
+    Nel grafico di Figura~\ref{fig:capacita} viene mostrata la sensibilità degli algoritmi a un cambiamento radicale della \textit{capacità massima}.
+    Usando dei grafi generati casualmente, tutti di dimensione tale per cui $n=1000$ e $$m=n\cdot (n-1)\cdot 0.005 = 4995,$$ sono stati divisi gli input in:
+    \begin{itemize}
+        \item grafi che hanno capacità massima $C=10$;
+        \item grafi che hanno capacità massima $C=100000$.
+    \end{itemize}
+
+    Dalla teoria, gli unici algoritmi che dovrebbero essere influenzati dalla capacità massima sono Capacity Scaling e Capacity Scaling + Shortest Augmenting Path, che hanno una complessità temporale che dipende da $\log C$.
+
+    I risultati visibili in Figura~\ref{fig:capacita} confermano questo fatto, con Shortest Augmenting Path che non viene influenzato dal cambiamento, mentre Capacity Scaling presenta tempi circa $12$x superiore.
+    Usando Shortest Augmenting Path come subroutine per Capacity Scaling, il tempo migliora e il fattore di peggioramento è di $3$x.
 
     \begin{figure}[ht]
         \centering
-        \input{../internal/analysis/capacity}
-        \caption{}
-        \label{fig:}
+        \resizebox{0.9\textwidth}{!}{\input{../internal/analysis/capacity}}
+        \caption{Analisi delle Capacità}
+        \label{fig:capacita}
     \end{figure}
-
-    TODO: analisi su questo grafico
 
     \section{Analisi su dataset reali}\label{sec:analisi_reale}
 
-    \begin{figure}[ht]
+    \begin{figure}[p]
         \centering
-        \input{../internal/analysis/real}
+        \resizebox{0.9\textwidth}{!}{\input{../internal/analysis/real_tsukuba}}
         \caption{Prestazioni sul dataset di Visione Artificiale BVZ-Tsukuba}
-        \label{fig:real_test}
+        \label{fig:real_tsukuba}
     \end{figure}
 
-    Dal grafico in Figura~\ref{fig:real_test}, si può notare come negli algoritmi di visione artificiale, come BVZ-Tsukuba~\cite{dataset}, a dominare sia l'algoritmo di Dinic, nella versione ricorsiva.
+    \begin{figure}[p]
+        \centering
+        \resizebox{0.9\textwidth}{!}{\input{../internal/analysis/real_venus}}
+        \caption{Prestazioni sul dataset di Visione Artificiale K2Z-venus}
+        \label{fig:real_venus}
+    \end{figure}
+
+    Dai grafici in Figura~\ref{fig:real_tsukuba} e~\ref{fig:real_venus}, si può notare come nei grafi di visione artificiale, come BVZ-Tsukuba e K2Z-Venus~\cite{dataset}, a dominare sia l'algoritmo di Dinic, nella versione ricorsiva.
     Shortest Augmenting Path, sia da solo sia nella versione con Capacity Scaling, ha delle prestazioni leggermente inferiori.
 
-    L'algoritmo più in difficoltà risulta essere nuovamente Capacity Scaling, che risolve il problema in più di $100s$ (per confronto, Dinic in versione ricorsiva ha risolto il problema in $\approx 0.1s$).
-    L'enorme differenza tra i due algoritmi potrebbe essere data dalla tipologia di dataset utilizzato: BVZ-Tsukuba utilizza capacità relativamente piccole, con $\log C = 10$, iterando dunque su poche fasi ma molto complesse.
+    Analizzando i risultati ottenuti sul grafo Tsukuba, l'algoritmo più in difficoltà risulta essere nuovamente Capacity Scaling, che risolve il problema in quasi $100s$ (per confronto, Dinic in versione ricorsiva ha risolto il problema in $\approx 0.1s$).
+    L'enorme differenza tra i due algoritmi potrebbe essere data dalla tipologia di grafo utilizzato: BVZ-Tsukuba utilizza capacità relativamente piccole, con $C = 10$, iterando dunque su poche fasi ma molto complesse.
 
-    TODO: inserire performance su Venus e Babyface
+    I risultati sul grafo Venus confermano l'analisi e, anzi, amplificano le differenze: Capacity Scaling ha un tempo di esecuzione sull'ordine dei minuti, mentre Shortest Augmenting Path e Dinic ricorsivo si confermano sotto al secondo.
+
+    È interessante notare come le differenze prestazionali che riguardano Dinic: la versione iterativa dell'algoritmo risulta essere decisamente più lenta della versione ricorsiva.
+    Nonostante la logica dell'algoritmo rimanga invariata, le differenze prestazionali potrebbero derivare dalla diversa gestione dello \textit{stack} (dichiarato esplicitamente nella versione iterativa, usato naturalmente mediante lo stack della memoria nella versione ricorsiva).
 
     \chapter{Conclusioni}\label{ch:conclusioni}
+    Negli algoritmi di ottimizzazione, l'analisi sulla complessità temporale teorica, ragionando sul caso peggiore, spesso risulta essere molto pessimistica.
+    In questo progetto, si è voluto effettuare un confronto diretto tra i $5$ algoritmi proposti attraverso un approcio empirico.
+
+    Gli algoritmi che sono risultati più efficienti sono Shortest Augmenting Path e Dinic ricorsivo, mentre Capacity Scaling risulta essere il meno efficiente.
+
+    Combinare Shortest Augmenting Path e Capacity Scaling ha migliorato le prestazioni di Capacity Scaling, ma il risultato è rimasto comunque inferiore a quello di Shortest Augmenting Path utilizzato da solo.
+
+    Infine, tra i due algoritmi migliori, benché la complessità temporale teorica di entrambi sia $O(n^2\cdot m)$, Shortest Augmenting Path risulta essere migliore quando il numero di archi $m$ cresce, mentre Dinic lo è quando il numero di archi è minore.
 
     \printbibliography
 

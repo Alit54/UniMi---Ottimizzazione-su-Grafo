@@ -14,7 +14,6 @@ data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Dinic,41095,34707106
 data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Capacity Scaling con SAP,41095,1489619400,7899,10656478,10,10691758
 data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Recursive Dinic,41095,753647500,10795,0,46,0
 data\flownetwork\BVZ-tsukuba\BVZ-tsukuba7.max,110594,495749,Capacity Scaling,41095,59929957200,7899,0,10,0
-Graph,Nodes,Edges,Algorithm,MaxFlow,Time (nanoseconds),Augments,Retreats,Advances,Phases
 data\flownetwork\KZ2-venus\KZ2-venus0.max,320287,1869299,Capacity Scaling,1144128,3750051340200,131805,0,14,0
 data\flownetwork\KZ2-venus\KZ2-venus0.max,320287,1869299,Shortest Augmenting Path,1144128,1773210600,175596,15131663,0,15708663
 data\flownetwork\KZ2-venus\KZ2-venus0.max,320287,1869299,Dinic,1144128,118250720800,175596,0,51,0
@@ -30,7 +29,6 @@ data\flownetwork\KZ2-venus\KZ2-venus21.max,312744,1822779,Shortest Augmenting Pa
 data\flownetwork\KZ2-venus\KZ2-venus21.max,312744,1822779,Dinic,955443,89301157600,136792,0,11,0
 data\flownetwork\KZ2-venus\KZ2-venus21.max,312744,1822779,Capacity Scaling con SAP,955443,3288177100,108268,19694908,14,20041226
 data\flownetwork\KZ2-venus\KZ2-venus21.max,312744,1822779,Recursive Dinic,955443,550235000,136792,0,11,0
-Graph,Nodes,Edges,Algorithm,MaxFlow,Time (nanoseconds),Augments,Retreats,Advances,Phases
 data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Dinic,175938,535300,16,0,5,0
 data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Capacity Scaling con SAP,175938,1043500,9,8,17,48
 data\flownetwork\custom\custom.n1000d0.50c100000mode0.max,1000,5000,Recursive Dinic,175938,516700,16,0,5,0
