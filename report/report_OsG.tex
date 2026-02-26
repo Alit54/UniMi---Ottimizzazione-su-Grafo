@@ -42,7 +42,7 @@
     Ad ogni coppia di nodi $(u,v)\in \set N\times \set N$, viene associata una capacità non negativa $c(u,v)\ge0$.
     Se $(u,v)\notin\set A$, allora $c(u,v)=0$.
 
-    Viene inoltre definito il flusso, una funzione $f:\set N\times \set N\to\mathbb{R}$ tale per cui a ogni arco viene associato un flusso non negativo e sempre inferiore alla capacità dell'arco:
+    Viene inoltre definito il flusso, una funzione $f:\set N\times \set N\to\mathbb{R}^+$ tale per cui a ogni arco viene associato un flusso non negativo e sempre inferiore alla capacità dell'arco:
     $$0\le f(u,v)\le c(u,v)\quad\forall (u,v)\in \set A$$
 
     Dato un nodo sorgente $s$ e un nodo pozzo $t$, l'obiettivo del problema è massimizzare il flusso uscente da $s$ ed entrante in $t$:
@@ -55,10 +55,11 @@
     {z}
     {}
     {}
-        \addConstraint{\sum_{(u\in\set N:(u,v)\in \set A)}f_{uv}-\sum_{(u\in\set N:(v,u)\in \set A)}f_{uv}}{=\begin{cases}
-                                                                                                                 -z&\text{se }v=s\\
-                                                                                                                 0&\forall j\ne s,t\\
-                                                                                                                 z&\text{se }v=t
+        \addConstraint{\sum_{u\in\set N:(u,v)\in \set A}f_{uv}-\sum_{u\in\set N:(v,u)\in \set A}f_{uv}}{=
+            \begin{cases}
+                -z&\text{se }v=s\\
+                0&\forall v \ne s,t\\
+                z&\text{se }v=t
         \end{cases}}
         \addConstraint{0\le f_{uv}\le c_{uv}\qquad\qquad\qquad\qquad}{\forall(u,v)\in\set A}
     \end{maxi*}
